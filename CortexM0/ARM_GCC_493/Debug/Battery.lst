@@ -1,0 +1,1307 @@
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 1
+
+
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"Battery.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.bss
+  18              		.align	1
+  19              	batteryLevelmVolts:
+  20 0000 0000     		.space	2
+  21              		.global	__aeabi_idiv
+  22              		.section	.text.MeasureBattery,"ax",%progbits
+  23              		.align	2
+  24              		.global	MeasureBattery
+  25              		.code	16
+  26              		.thumb_func
+  27              		.type	MeasureBattery, %function
+  28              	MeasureBattery:
+  29              	.LFB37:
+  30              		.file 1 ".\\Battery.c"
+   1:.\Battery.c   **** /******************************************************************************
+   2:.\Battery.c   **** * Project Name      : PSoC_4_BLE_Eddystone
+   3:.\Battery.c   **** * File Name         : Battery.c
+   4:.\Battery.c   **** * Version           : 1.0
+   5:.\Battery.c   **** * Device Used       : CY8C4247LQI-BL483
+   6:.\Battery.c   **** * Software Used     : PSoC Creator 3.3 SP1
+   7:.\Battery.c   **** * Compiler          : ARM GCC 4.9.3, ARM MDK Generic
+   8:.\Battery.c   **** * Related Hardware  : CY8CKIT-042-BLE Bluetooth Low Energy Pioneer Kit
+   9:.\Battery.c   **** * Owner             : DEJO
+  10:.\Battery.c   **** *
+  11:.\Battery.c   **** ********************************************************************************
+  12:.\Battery.c   **** * Copyright (2016), Cypress Semiconductor Corporation. All Rights Reserved.
+  13:.\Battery.c   **** ********************************************************************************
+  14:.\Battery.c   **** * This software is owned by Cypress Semiconductor Corporation (Cypress)
+  15:.\Battery.c   **** * and is protected by and subject to worldwide patent protection (United
+  16:.\Battery.c   **** * States and foreign), United States copyright laws and international treaty
+  17:.\Battery.c   **** * provisions. Cypress hereby grants to licensee a personal, non-exclusive,
+  18:.\Battery.c   **** * non-transferable license to copy, use, modify, create derivative works of,
+  19:.\Battery.c   **** * and compile the Cypress Source Code and derivative works for the sole
+  20:.\Battery.c   **** * purpose of creating custom software in support of licensee product to be
+  21:.\Battery.c   **** * used only in conjunction with a Cypress integrated circuit as specified in
+  22:.\Battery.c   **** * the applicable agreement. Any reproduction, modification, translation,
+  23:.\Battery.c   **** * compilation, or representation of this software except as specified above
+  24:.\Battery.c   **** * is prohibited without the express written permission of Cypress.
+  25:.\Battery.c   **** *
+  26:.\Battery.c   **** * Disclaimer: CYPRESS MAKES NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, WITH
+  27:.\Battery.c   **** * REGARD TO THIS MATERIAL, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 2
+
+
+  28:.\Battery.c   **** * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+  29:.\Battery.c   **** * Cypress reserves the right to make changes without further notice to the
+  30:.\Battery.c   **** * materials described herein. Cypress does not assume any liability arising out
+  31:.\Battery.c   **** * of the application or use of any product or circuit described herein. Cypress
+  32:.\Battery.c   **** * does not authorize its products for use as critical components in life-support
+  33:.\Battery.c   **** * systems where a malfunction or failure may reasonably be expected to result in
+  34:.\Battery.c   **** * significant injury to the user. The inclusion of Cypress' product in a life-
+  35:.\Battery.c   **** * support systems application implies that the manufacturer assumes all risk of
+  36:.\Battery.c   **** * such use and in doing so indemnifies Cypress against all charges.
+  37:.\Battery.c   **** *
+  38:.\Battery.c   **** * Use of this Software may be limited by and subject to the applicable Cypress
+  39:.\Battery.c   **** * software license agreement.
+  40:.\Battery.c   **** *******************************************************************************/
+  41:.\Battery.c   **** #include "main.h"
+  42:.\Battery.c   **** #include "Battery.h"
+  43:.\Battery.c   **** #include "WatchdogTimer.h"
+  44:.\Battery.c   **** 
+  45:.\Battery.c   **** /* Stores measured battery voltage in mV */
+  46:.\Battery.c   **** static uint16 batteryLevelmVolts;
+  47:.\Battery.c   **** 
+  48:.\Battery.c   **** /*******************************************************************************
+  49:.\Battery.c   **** * Function Name: MeasureBattery
+  50:.\Battery.c   **** ********************************************************************************
+  51:.\Battery.c   **** *
+  52:.\Battery.c   **** * Summary:
+  53:.\Battery.c   **** *   This function measures the battery voltage and stores it.
+  54:.\Battery.c   **** *
+  55:.\Battery.c   **** * Parameters:
+  56:.\Battery.c   **** *  None
+  57:.\Battery.c   **** *
+  58:.\Battery.c   **** * Return:
+  59:.\Battery.c   **** *  None
+  60:.\Battery.c   **** *
+  61:.\Battery.c   **** *******************************************************************************/
+  62:.\Battery.c   **** void MeasureBattery(void)
+  63:.\Battery.c   **** {
+  31              		.loc 1 63 0
+  32              		.cfi_startproc
+  33 0000 90B5     		push	{r4, r7, lr}
+  34              		.cfi_def_cfa_offset 12
+  35              		.cfi_offset 4, -12
+  36              		.cfi_offset 7, -8
+  37              		.cfi_offset 14, -4
+  38 0002 83B0     		sub	sp, sp, #12
+  39              		.cfi_def_cfa_offset 24
+  40 0004 00AF     		add	r7, sp, #0
+  41              		.cfi_def_cfa_register 7
+  64:.\Battery.c   ****     int16   adcResult;
+  65:.\Battery.c   ****     uint32  sarControlReg;
+  66:.\Battery.c   **** 
+  67:.\Battery.c   ****     /* Wakeup ADC from sleep for measurements. */
+  68:.\Battery.c   ****     ADC_Wakeup();
+  42              		.loc 1 68 0
+  43 0006 FFF7FEFF 		bl	ADC_Wakeup
+  69:.\Battery.c   **** 
+  70:.\Battery.c   ****     /* Set the reference to 1.024V and enable reference bypass */
+  71:.\Battery.c   ****     sarControlReg = ADC_SAR_CTRL_REG & ~ADC_VREF_MASK;
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 3
+
+
+  44              		.loc 1 71 0
+  45 000a 204B     		ldr	r3, .L2
+  46 000c 1B68     		ldr	r3, [r3]
+  47 000e F022     		mov	r2, #240
+  48 0010 9343     		bic	r3, r2
+  49 0012 7B60     		str	r3, [r7, #4]
+  72:.\Battery.c   ****     ADC_SAR_CTRL_REG = sarControlReg | ADC_VREF_INTERNAL1024BYPASSED;
+  50              		.loc 1 72 0
+  51 0014 1D4B     		ldr	r3, .L2
+  52 0016 7A68     		ldr	r2, [r7, #4]
+  53 0018 C021     		mov	r1, #192
+  54 001a 0A43     		orr	r2, r1
+  55 001c 1A60     		str	r2, [r3]
+  73:.\Battery.c   **** 
+  74:.\Battery.c   ****     /* 25 ms delay for reference capacitor to charge */
+  75:.\Battery.c   ****     LowPowerWait(REFERENCE_CAPACITOR_CHARGE_TIME);
+  56              		.loc 1 75 0
+  57 001e 1C4B     		ldr	r3, .L2+4
+  58 0020 181C     		mov	r0, r3
+  59 0022 FFF7FEFF 		bl	LowPowerWait
+  76:.\Battery.c   **** 
+  77:.\Battery.c   ****     /* Set the reference to VDD and disable reference bypass */
+  78:.\Battery.c   ****     sarControlReg = ADC_SAR_CTRL_REG & ~ADC_VREF_MASK;
+  60              		.loc 1 78 0
+  61 0026 194B     		ldr	r3, .L2
+  62 0028 1B68     		ldr	r3, [r3]
+  63 002a F022     		mov	r2, #240
+  64 002c 9343     		bic	r3, r2
+  65 002e 7B60     		str	r3, [r7, #4]
+  79:.\Battery.c   ****     ADC_SAR_CTRL_REG = sarControlReg | ADC_VREF_VDDA;
+  66              		.loc 1 79 0
+  67 0030 164B     		ldr	r3, .L2
+  68 0032 7A68     		ldr	r2, [r7, #4]
+  69 0034 7021     		mov	r1, #112
+  70 0036 0A43     		orr	r2, r1
+  71 0038 1A60     		str	r2, [r3]
+  80:.\Battery.c   **** 
+  81:.\Battery.c   ****     /* Perform a measurement. Store this value in Vref. */
+  82:.\Battery.c   ****     LowPowerWait(VDD_REFERENCE_SWITCH_PERIOD);
+  72              		.loc 1 82 0
+  73 003a 2020     		mov	r0, #32
+  74 003c FFF7FEFF 		bl	LowPowerWait
+  83:.\Battery.c   ****     ADC_StartConvert();
+  75              		.loc 1 83 0
+  76 0040 FFF7FEFF 		bl	ADC_StartConvert
+  84:.\Battery.c   ****     ADC_IsEndConversion(ADC_WAIT_FOR_RESULT);
+  77              		.loc 1 84 0
+  78 0044 0220     		mov	r0, #2
+  79 0046 FFF7FEFF 		bl	ADC_IsEndConversion
+  85:.\Battery.c   **** 
+  86:.\Battery.c   ****     /* Set the reference to 1.024V and enable reference bypass */
+  87:.\Battery.c   ****     sarControlReg = ADC_SAR_CTRL_REG & ~ADC_VREF_MASK;
+  80              		.loc 1 87 0
+  81 004a 104B     		ldr	r3, .L2
+  82 004c 1B68     		ldr	r3, [r3]
+  83 004e F022     		mov	r2, #240
+  84 0050 9343     		bic	r3, r2
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 4
+
+
+  85 0052 7B60     		str	r3, [r7, #4]
+  88:.\Battery.c   ****     ADC_SAR_CTRL_REG = sarControlReg | ADC_VREF_INTERNAL1024BYPASSED;
+  86              		.loc 1 88 0
+  87 0054 0D4B     		ldr	r3, .L2
+  88 0056 7A68     		ldr	r2, [r7, #4]
+  89 0058 C021     		mov	r1, #192
+  90 005a 0A43     		orr	r2, r1
+  91 005c 1A60     		str	r2, [r3]
+  89:.\Battery.c   **** 
+  90:.\Battery.c   ****     adcResult = ADC_GetResult16(ADC_BATTERY_CHANNEL);
+  92              		.loc 1 90 0
+  93 005e BC1C     		add	r4, r7, #2
+  94 0060 0020     		mov	r0, #0
+  95 0062 FFF7FEFF 		bl	ADC_GetResult16
+  96 0066 031C     		mov	r3, r0
+  97 0068 2380     		strh	r3, [r4]
+  91:.\Battery.c   ****     /* Calculate input voltage by using ratio of ADC counts from reference
+  92:.\Battery.c   ****     *  and ADC Full Scale counts. */
+  93:.\Battery.c   ****     batteryLevelmVolts = ((1024 * 2048) / adcResult) ;
+  98              		.loc 1 93 0
+  99 006a BB1C     		add	r3, r7, #2
+ 100 006c 0022     		mov	r2, #0
+ 101 006e 9A5E     		ldrsh	r2, [r3, r2]
+ 102 0070 8023     		mov	r3, #128
+ 103 0072 9803     		lsl	r0, r3, #14
+ 104 0074 111C     		mov	r1, r2
+ 105 0076 FFF7FEFF 		bl	__aeabi_idiv
+ 106 007a 031C     		mov	r3, r0
+ 107 007c 9AB2     		uxth	r2, r3
+ 108 007e 054B     		ldr	r3, .L2+8
+ 109 0080 1A80     		strh	r2, [r3]
+  94:.\Battery.c   **** 
+  95:.\Battery.c   ****     /* Put ADC to sleep after measurements are done. */
+  96:.\Battery.c   ****     ADC_Sleep();
+ 110              		.loc 1 96 0
+ 111 0082 FFF7FEFF 		bl	ADC_Sleep
+  97:.\Battery.c   **** }
+ 112              		.loc 1 97 0
+ 113 0086 BD46     		mov	sp, r7
+ 114 0088 03B0     		add	sp, sp, #12
+ 115              		@ sp needed
+ 116 008a 90BD     		pop	{r4, r7, pc}
+ 117              	.L3:
+ 118              		.align	2
+ 119              	.L2:
+ 120 008c 00003A40 		.word	1077542912
+ 121 0090 33030000 		.word	819
+ 122 0094 00000000 		.word	batteryLevelmVolts
+ 123              		.cfi_endproc
+ 124              	.LFE37:
+ 125              		.size	MeasureBattery, .-MeasureBattery
+ 126              		.section	.text.GetMeasuredBatteryVoltage,"ax",%progbits
+ 127              		.align	2
+ 128              		.global	GetMeasuredBatteryVoltage
+ 129              		.code	16
+ 130              		.thumb_func
+ 131              		.type	GetMeasuredBatteryVoltage, %function
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 5
+
+
+ 132              	GetMeasuredBatteryVoltage:
+ 133              	.LFB38:
+  98:.\Battery.c   **** 
+  99:.\Battery.c   **** /*******************************************************************************
+ 100:.\Battery.c   **** * Function Name: GetMeasuredBatteryVoltage
+ 101:.\Battery.c   **** ********************************************************************************
+ 102:.\Battery.c   **** *
+ 103:.\Battery.c   **** * Summary:
+ 104:.\Battery.c   **** *   This function returns currently measured voltage.
+ 105:.\Battery.c   **** *
+ 106:.\Battery.c   **** * Parameters:
+ 107:.\Battery.c   **** *  None
+ 108:.\Battery.c   **** *
+ 109:.\Battery.c   **** * Return:
+ 110:.\Battery.c   **** *  uint16: currently measured battery voltage
+ 111:.\Battery.c   **** *
+ 112:.\Battery.c   **** *******************************************************************************/
+ 113:.\Battery.c   **** uint16 GetMeasuredBatteryVoltage(void)
+ 114:.\Battery.c   **** {
+ 134              		.loc 1 114 0
+ 135              		.cfi_startproc
+ 136 0000 80B5     		push	{r7, lr}
+ 137              		.cfi_def_cfa_offset 8
+ 138              		.cfi_offset 7, -8
+ 139              		.cfi_offset 14, -4
+ 140 0002 00AF     		add	r7, sp, #0
+ 141              		.cfi_def_cfa_register 7
+ 115:.\Battery.c   ****     return batteryLevelmVolts;
+ 142              		.loc 1 115 0
+ 143 0004 024B     		ldr	r3, .L6
+ 144 0006 1B88     		ldrh	r3, [r3]
+ 116:.\Battery.c   **** }
+ 145              		.loc 1 116 0
+ 146 0008 181C     		mov	r0, r3
+ 147 000a BD46     		mov	sp, r7
+ 148              		@ sp needed
+ 149 000c 80BD     		pop	{r7, pc}
+ 150              	.L7:
+ 151 000e C046     		.align	2
+ 152              	.L6:
+ 153 0010 00000000 		.word	batteryLevelmVolts
+ 154              		.cfi_endproc
+ 155              	.LFE38:
+ 156              		.size	GetMeasuredBatteryVoltage, .-GetMeasuredBatteryVoltage
+ 157              		.text
+ 158              	.Letext0:
+ 159              		.file 2 "Generated_Source\\PSoC4/cytypes.h"
+ 160              		.file 3 "Generated_Source\\PSoC4/BLE_Stack.h"
+ 161              		.section	.debug_info,"",%progbits
+ 162              	.Ldebug_info0:
+ 163 0000 96020000 		.4byte	0x296
+ 164 0004 0400     		.2byte	0x4
+ 165 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 166 000a 04       		.byte	0x4
+ 167 000b 01       		.uleb128 0x1
+ 168 000c 05050000 		.4byte	.LASF77
+ 169 0010 01       		.byte	0x1
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 6
+
+
+ 170 0011 75000000 		.4byte	.LASF78
+ 171 0015 CD050000 		.4byte	.LASF79
+ 172 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 173 001d 00000000 		.4byte	0
+ 174 0021 00000000 		.4byte	.Ldebug_line0
+ 175 0025 02       		.uleb128 0x2
+ 176 0026 01       		.byte	0x1
+ 177 0027 06       		.byte	0x6
+ 178 0028 C6030000 		.4byte	.LASF0
+ 179 002c 02       		.uleb128 0x2
+ 180 002d 01       		.byte	0x1
+ 181 002e 08       		.byte	0x8
+ 182 002f 5C030000 		.4byte	.LASF1
+ 183 0033 02       		.uleb128 0x2
+ 184 0034 02       		.byte	0x2
+ 185 0035 05       		.byte	0x5
+ 186 0036 48000000 		.4byte	.LASF2
+ 187 003a 02       		.uleb128 0x2
+ 188 003b 02       		.byte	0x2
+ 189 003c 07       		.byte	0x7
+ 190 003d C4040000 		.4byte	.LASF3
+ 191 0041 02       		.uleb128 0x2
+ 192 0042 04       		.byte	0x4
+ 193 0043 05       		.byte	0x5
+ 194 0044 27020000 		.4byte	.LASF4
+ 195 0048 02       		.uleb128 0x2
+ 196 0049 04       		.byte	0x4
+ 197 004a 07       		.byte	0x7
+ 198 004b 57040000 		.4byte	.LASF5
+ 199 004f 02       		.uleb128 0x2
+ 200 0050 08       		.byte	0x8
+ 201 0051 05       		.byte	0x5
+ 202 0052 02020000 		.4byte	.LASF6
+ 203 0056 02       		.uleb128 0x2
+ 204 0057 08       		.byte	0x8
+ 205 0058 07       		.byte	0x7
+ 206 0059 10020000 		.4byte	.LASF7
+ 207 005d 03       		.uleb128 0x3
+ 208 005e 04       		.byte	0x4
+ 209 005f 05       		.byte	0x5
+ 210 0060 696E7400 		.ascii	"int\000"
+ 211 0064 02       		.uleb128 0x2
+ 212 0065 04       		.byte	0x4
+ 213 0066 07       		.byte	0x7
+ 214 0067 2F040000 		.4byte	.LASF8
+ 215 006b 04       		.uleb128 0x4
+ 216 006c 02010000 		.4byte	.LASF9
+ 217 0070 02       		.byte	0x2
+ 218 0071 3901     		.2byte	0x139
+ 219 0073 3A000000 		.4byte	0x3a
+ 220 0077 04       		.uleb128 0x4
+ 221 0078 58060000 		.4byte	.LASF10
+ 222 007c 02       		.byte	0x2
+ 223 007d 3A01     		.2byte	0x13a
+ 224 007f 48000000 		.4byte	0x48
+ 225 0083 04       		.uleb128 0x4
+ 226 0084 09010000 		.4byte	.LASF11
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 7
+
+
+ 227 0088 02       		.byte	0x2
+ 228 0089 3C01     		.2byte	0x13c
+ 229 008b 33000000 		.4byte	0x33
+ 230 008f 02       		.uleb128 0x2
+ 231 0090 04       		.byte	0x4
+ 232 0091 04       		.byte	0x4
+ 233 0092 C9010000 		.4byte	.LASF12
+ 234 0096 02       		.uleb128 0x2
+ 235 0097 08       		.byte	0x8
+ 236 0098 04       		.byte	0x4
+ 237 0099 A0060000 		.4byte	.LASF13
+ 238 009d 02       		.uleb128 0x2
+ 239 009e 01       		.byte	0x1
+ 240 009f 08       		.byte	0x8
+ 241 00a0 00050000 		.4byte	.LASF14
+ 242 00a4 04       		.uleb128 0x4
+ 243 00a5 BE040000 		.4byte	.LASF15
+ 244 00a9 02       		.byte	0x2
+ 245 00aa E401     		.2byte	0x1e4
+ 246 00ac B0000000 		.4byte	0xb0
+ 247 00b0 05       		.uleb128 0x5
+ 248 00b1 77000000 		.4byte	0x77
+ 249 00b5 02       		.uleb128 0x2
+ 250 00b6 04       		.byte	0x4
+ 251 00b7 07       		.byte	0x7
+ 252 00b8 6C000000 		.4byte	.LASF16
+ 253 00bc 06       		.uleb128 0x6
+ 254 00bd 01       		.byte	0x1
+ 255 00be 03       		.byte	0x3
+ 256 00bf A4       		.byte	0xa4
+ 257 00c0 41020000 		.4byte	0x241
+ 258 00c4 07       		.uleb128 0x7
+ 259 00c5 73010000 		.4byte	.LASF17
+ 260 00c9 00       		.sleb128 0
+ 261 00ca 07       		.uleb128 0x7
+ 262 00cb D1000000 		.4byte	.LASF18
+ 263 00cf 01       		.sleb128 1
+ 264 00d0 07       		.uleb128 0x7
+ 265 00d1 BD070000 		.4byte	.LASF19
+ 266 00d5 02       		.sleb128 2
+ 267 00d6 07       		.uleb128 0x7
+ 268 00d7 D8060000 		.4byte	.LASF20
+ 269 00db 03       		.sleb128 3
+ 270 00dc 07       		.uleb128 0x7
+ 271 00dd 9B000000 		.4byte	.LASF21
+ 272 00e1 04       		.sleb128 4
+ 273 00e2 07       		.uleb128 0x7
+ 274 00e3 B9020000 		.4byte	.LASF22
+ 275 00e7 05       		.sleb128 5
+ 276 00e8 07       		.uleb128 0x7
+ 277 00e9 36070000 		.4byte	.LASF23
+ 278 00ed 20       		.sleb128 32
+ 279 00ee 07       		.uleb128 0x7
+ 280 00ef 69040000 		.4byte	.LASF24
+ 281 00f3 21       		.sleb128 33
+ 282 00f4 07       		.uleb128 0x7
+ 283 00f5 1A000000 		.4byte	.LASF25
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 8
+
+
+ 284 00f9 22       		.sleb128 34
+ 285 00fa 07       		.uleb128 0x7
+ 286 00fb D5020000 		.4byte	.LASF26
+ 287 00ff 23       		.sleb128 35
+ 288 0100 07       		.uleb128 0x7
+ 289 0101 13040000 		.4byte	.LASF27
+ 290 0105 24       		.sleb128 36
+ 291 0106 07       		.uleb128 0x7
+ 292 0107 52000000 		.4byte	.LASF28
+ 293 010b 25       		.sleb128 37
+ 294 010c 07       		.uleb128 0x7
+ 295 010d 70020000 		.4byte	.LASF29
+ 296 0111 26       		.sleb128 38
+ 297 0112 07       		.uleb128 0x7
+ 298 0113 51020000 		.4byte	.LASF30
+ 299 0117 27       		.sleb128 39
+ 300 0118 07       		.uleb128 0x7
+ 301 0119 8F080000 		.4byte	.LASF31
+ 302 011d 28       		.sleb128 40
+ 303 011e 07       		.uleb128 0x7
+ 304 011f A1040000 		.4byte	.LASF32
+ 305 0123 29       		.sleb128 41
+ 306 0124 07       		.uleb128 0x7
+ 307 0125 D7040000 		.4byte	.LASF33
+ 308 0129 2A       		.sleb128 42
+ 309 012a 07       		.uleb128 0x7
+ 310 012b F3070000 		.4byte	.LASF34
+ 311 012f 2B       		.sleb128 43
+ 312 0130 07       		.uleb128 0x7
+ 313 0131 0F010000 		.4byte	.LASF35
+ 314 0135 2C       		.sleb128 44
+ 315 0136 07       		.uleb128 0x7
+ 316 0137 81000000 		.4byte	.LASF36
+ 317 013b C000     		.sleb128 64
+ 318 013d 07       		.uleb128 0x7
+ 319 013e 3C040000 		.4byte	.LASF37
+ 320 0142 C100     		.sleb128 65
+ 321 0144 07       		.uleb128 0x7
+ 322 0145 D5080000 		.4byte	.LASF38
+ 323 0149 C200     		.sleb128 66
+ 324 014b 07       		.uleb128 0x7
+ 325 014c E4000000 		.4byte	.LASF39
+ 326 0150 C300     		.sleb128 67
+ 327 0152 07       		.uleb128 0x7
+ 328 0153 9F070000 		.4byte	.LASF40
+ 329 0157 C400     		.sleb128 68
+ 330 0159 07       		.uleb128 0x7
+ 331 015a 5A070000 		.4byte	.LASF41
+ 332 015e C500     		.sleb128 69
+ 333 0160 07       		.uleb128 0x7
+ 334 0161 B0000000 		.4byte	.LASF42
+ 335 0165 C600     		.sleb128 70
+ 336 0167 07       		.uleb128 0x7
+ 337 0168 A8030000 		.4byte	.LASF43
+ 338 016c C700     		.sleb128 71
+ 339 016e 07       		.uleb128 0x7
+ 340 016f EC030000 		.4byte	.LASF44
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 9
+
+
+ 341 0173 C800     		.sleb128 72
+ 342 0175 07       		.uleb128 0x7
+ 343 0176 CF010000 		.4byte	.LASF45
+ 344 017a C900     		.sleb128 73
+ 345 017c 07       		.uleb128 0x7
+ 346 017d AF050000 		.4byte	.LASF46
+ 347 0181 CA00     		.sleb128 74
+ 348 0183 07       		.uleb128 0x7
+ 349 0184 33010000 		.4byte	.LASF47
+ 350 0188 CB00     		.sleb128 75
+ 351 018a 07       		.uleb128 0x7
+ 352 018b D2030000 		.4byte	.LASF48
+ 353 018f CC00     		.sleb128 76
+ 354 0191 07       		.uleb128 0x7
+ 355 0192 E8010000 		.4byte	.LASF49
+ 356 0196 CD00     		.sleb128 77
+ 357 0198 07       		.uleb128 0x7
+ 358 0199 81070000 		.4byte	.LASF50
+ 359 019d CE00     		.sleb128 78
+ 360 019f 07       		.uleb128 0x7
+ 361 01a0 6A030000 		.4byte	.LASF51
+ 362 01a4 CF00     		.sleb128 79
+ 363 01a6 07       		.uleb128 0x7
+ 364 01a7 5D080000 		.4byte	.LASF52
+ 365 01ab D000     		.sleb128 80
+ 366 01ad 07       		.uleb128 0x7
+ 367 01ae 39060000 		.4byte	.LASF53
+ 368 01b2 D100     		.sleb128 81
+ 369 01b4 07       		.uleb128 0x7
+ 370 01b5 98020000 		.4byte	.LASF54
+ 371 01b9 D200     		.sleb128 82
+ 372 01bb 07       		.uleb128 0x7
+ 373 01bc 30020000 		.4byte	.LASF55
+ 374 01c0 D300     		.sleb128 83
+ 375 01c2 07       		.uleb128 0x7
+ 376 01c3 52010000 		.4byte	.LASF56
+ 377 01c7 D400     		.sleb128 84
+ 378 01c9 07       		.uleb128 0x7
+ 379 01ca B1080000 		.4byte	.LASF57
+ 380 01ce D500     		.sleb128 85
+ 381 01d0 07       		.uleb128 0x7
+ 382 01d1 3B080000 		.4byte	.LASF58
+ 383 01d5 D600     		.sleb128 86
+ 384 01d7 07       		.uleb128 0x7
+ 385 01d8 12080000 		.4byte	.LASF59
+ 386 01dc D700     		.sleb128 87
+ 387 01de 07       		.uleb128 0x7
+ 388 01df 36030000 		.4byte	.LASF60
+ 389 01e3 F000     		.sleb128 112
+ 390 01e5 07       		.uleb128 0x7
+ 391 01e6 10070000 		.4byte	.LASF61
+ 392 01ea F100     		.sleb128 113
+ 393 01ec 07       		.uleb128 0x7
+ 394 01ed 93050000 		.4byte	.LASF62
+ 395 01f1 F200     		.sleb128 114
+ 396 01f3 07       		.uleb128 0x7
+ 397 01f4 8A010000 		.4byte	.LASF63
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 10
+
+
+ 398 01f8 F300     		.sleb128 115
+ 399 01fa 07       		.uleb128 0x7
+ 400 01fb 0A030000 		.4byte	.LASF64
+ 401 01ff F400     		.sleb128 116
+ 402 0201 07       		.uleb128 0x7
+ 403 0202 80040000 		.4byte	.LASF65
+ 404 0206 F500     		.sleb128 117
+ 405 0208 07       		.uleb128 0x7
+ 406 0209 A8010000 		.4byte	.LASF66
+ 407 020d F600     		.sleb128 118
+ 408 020f 07       		.uleb128 0x7
+ 409 0210 F1060000 		.4byte	.LASF67
+ 410 0214 F700     		.sleb128 119
+ 411 0216 07       		.uleb128 0x7
+ 412 0217 7D060000 		.4byte	.LASF68
+ 413 021b F800     		.sleb128 120
+ 414 021d 07       		.uleb128 0x7
+ 415 021e B5060000 		.4byte	.LASF69
+ 416 0222 F900     		.sleb128 121
+ 417 0224 07       		.uleb128 0x7
+ 418 0225 CF070000 		.4byte	.LASF70
+ 419 0229 FA00     		.sleb128 122
+ 420 022b 07       		.uleb128 0x7
+ 421 022c 5F060000 		.4byte	.LASF71
+ 422 0230 FA01     		.sleb128 250
+ 423 0232 07       		.uleb128 0x7
+ 424 0233 89030000 		.4byte	.LASF72
+ 425 0237 FB01     		.sleb128 251
+ 426 0239 07       		.uleb128 0x7
+ 427 023a 28030000 		.4byte	.LASF73
+ 428 023e FF01     		.sleb128 255
+ 429 0240 00       		.byte	0
+ 430 0241 08       		.uleb128 0x8
+ 431 0242 FB020000 		.4byte	.LASF80
+ 432 0246 01       		.byte	0x1
+ 433 0247 3E       		.byte	0x3e
+ 434 0248 00000000 		.4byte	.LFB37
+ 435 024c 98000000 		.4byte	.LFE37-.LFB37
+ 436 0250 01       		.uleb128 0x1
+ 437 0251 9C       		.byte	0x9c
+ 438 0252 73020000 		.4byte	0x273
+ 439 0256 09       		.uleb128 0x9
+ 440 0257 3E000000 		.4byte	.LASF74
+ 441 025b 01       		.byte	0x1
+ 442 025c 40       		.byte	0x40
+ 443 025d 83000000 		.4byte	0x83
+ 444 0261 02       		.uleb128 0x2
+ 445 0262 91       		.byte	0x91
+ 446 0263 6A       		.sleb128 -22
+ 447 0264 09       		.uleb128 0x9
+ 448 0265 A7060000 		.4byte	.LASF75
+ 449 0269 01       		.byte	0x1
+ 450 026a 41       		.byte	0x41
+ 451 026b 77000000 		.4byte	0x77
+ 452 026f 02       		.uleb128 0x2
+ 453 0270 91       		.byte	0x91
+ 454 0271 6C       		.sleb128 -20
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 11
+
+
+ 455 0272 00       		.byte	0
+ 456 0273 0A       		.uleb128 0xa
+ 457 0274 00000000 		.4byte	.LASF81
+ 458 0278 01       		.byte	0x1
+ 459 0279 71       		.byte	0x71
+ 460 027a 6B000000 		.4byte	0x6b
+ 461 027e 00000000 		.4byte	.LFB38
+ 462 0282 14000000 		.4byte	.LFE38-.LFB38
+ 463 0286 01       		.uleb128 0x1
+ 464 0287 9C       		.byte	0x9c
+ 465 0288 09       		.uleb128 0x9
+ 466 0289 7C080000 		.4byte	.LASF76
+ 467 028d 01       		.byte	0x1
+ 468 028e 2E       		.byte	0x2e
+ 469 028f 6B000000 		.4byte	0x6b
+ 470 0293 05       		.uleb128 0x5
+ 471 0294 03       		.byte	0x3
+ 472 0295 00000000 		.4byte	batteryLevelmVolts
+ 473 0299 00       		.byte	0
+ 474              		.section	.debug_abbrev,"",%progbits
+ 475              	.Ldebug_abbrev0:
+ 476 0000 01       		.uleb128 0x1
+ 477 0001 11       		.uleb128 0x11
+ 478 0002 01       		.byte	0x1
+ 479 0003 25       		.uleb128 0x25
+ 480 0004 0E       		.uleb128 0xe
+ 481 0005 13       		.uleb128 0x13
+ 482 0006 0B       		.uleb128 0xb
+ 483 0007 03       		.uleb128 0x3
+ 484 0008 0E       		.uleb128 0xe
+ 485 0009 1B       		.uleb128 0x1b
+ 486 000a 0E       		.uleb128 0xe
+ 487 000b 55       		.uleb128 0x55
+ 488 000c 17       		.uleb128 0x17
+ 489 000d 11       		.uleb128 0x11
+ 490 000e 01       		.uleb128 0x1
+ 491 000f 10       		.uleb128 0x10
+ 492 0010 17       		.uleb128 0x17
+ 493 0011 00       		.byte	0
+ 494 0012 00       		.byte	0
+ 495 0013 02       		.uleb128 0x2
+ 496 0014 24       		.uleb128 0x24
+ 497 0015 00       		.byte	0
+ 498 0016 0B       		.uleb128 0xb
+ 499 0017 0B       		.uleb128 0xb
+ 500 0018 3E       		.uleb128 0x3e
+ 501 0019 0B       		.uleb128 0xb
+ 502 001a 03       		.uleb128 0x3
+ 503 001b 0E       		.uleb128 0xe
+ 504 001c 00       		.byte	0
+ 505 001d 00       		.byte	0
+ 506 001e 03       		.uleb128 0x3
+ 507 001f 24       		.uleb128 0x24
+ 508 0020 00       		.byte	0
+ 509 0021 0B       		.uleb128 0xb
+ 510 0022 0B       		.uleb128 0xb
+ 511 0023 3E       		.uleb128 0x3e
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 12
+
+
+ 512 0024 0B       		.uleb128 0xb
+ 513 0025 03       		.uleb128 0x3
+ 514 0026 08       		.uleb128 0x8
+ 515 0027 00       		.byte	0
+ 516 0028 00       		.byte	0
+ 517 0029 04       		.uleb128 0x4
+ 518 002a 16       		.uleb128 0x16
+ 519 002b 00       		.byte	0
+ 520 002c 03       		.uleb128 0x3
+ 521 002d 0E       		.uleb128 0xe
+ 522 002e 3A       		.uleb128 0x3a
+ 523 002f 0B       		.uleb128 0xb
+ 524 0030 3B       		.uleb128 0x3b
+ 525 0031 05       		.uleb128 0x5
+ 526 0032 49       		.uleb128 0x49
+ 527 0033 13       		.uleb128 0x13
+ 528 0034 00       		.byte	0
+ 529 0035 00       		.byte	0
+ 530 0036 05       		.uleb128 0x5
+ 531 0037 35       		.uleb128 0x35
+ 532 0038 00       		.byte	0
+ 533 0039 49       		.uleb128 0x49
+ 534 003a 13       		.uleb128 0x13
+ 535 003b 00       		.byte	0
+ 536 003c 00       		.byte	0
+ 537 003d 06       		.uleb128 0x6
+ 538 003e 04       		.uleb128 0x4
+ 539 003f 01       		.byte	0x1
+ 540 0040 0B       		.uleb128 0xb
+ 541 0041 0B       		.uleb128 0xb
+ 542 0042 3A       		.uleb128 0x3a
+ 543 0043 0B       		.uleb128 0xb
+ 544 0044 3B       		.uleb128 0x3b
+ 545 0045 0B       		.uleb128 0xb
+ 546 0046 01       		.uleb128 0x1
+ 547 0047 13       		.uleb128 0x13
+ 548 0048 00       		.byte	0
+ 549 0049 00       		.byte	0
+ 550 004a 07       		.uleb128 0x7
+ 551 004b 28       		.uleb128 0x28
+ 552 004c 00       		.byte	0
+ 553 004d 03       		.uleb128 0x3
+ 554 004e 0E       		.uleb128 0xe
+ 555 004f 1C       		.uleb128 0x1c
+ 556 0050 0D       		.uleb128 0xd
+ 557 0051 00       		.byte	0
+ 558 0052 00       		.byte	0
+ 559 0053 08       		.uleb128 0x8
+ 560 0054 2E       		.uleb128 0x2e
+ 561 0055 01       		.byte	0x1
+ 562 0056 3F       		.uleb128 0x3f
+ 563 0057 19       		.uleb128 0x19
+ 564 0058 03       		.uleb128 0x3
+ 565 0059 0E       		.uleb128 0xe
+ 566 005a 3A       		.uleb128 0x3a
+ 567 005b 0B       		.uleb128 0xb
+ 568 005c 3B       		.uleb128 0x3b
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 13
+
+
+ 569 005d 0B       		.uleb128 0xb
+ 570 005e 27       		.uleb128 0x27
+ 571 005f 19       		.uleb128 0x19
+ 572 0060 11       		.uleb128 0x11
+ 573 0061 01       		.uleb128 0x1
+ 574 0062 12       		.uleb128 0x12
+ 575 0063 06       		.uleb128 0x6
+ 576 0064 40       		.uleb128 0x40
+ 577 0065 18       		.uleb128 0x18
+ 578 0066 9642     		.uleb128 0x2116
+ 579 0068 19       		.uleb128 0x19
+ 580 0069 01       		.uleb128 0x1
+ 581 006a 13       		.uleb128 0x13
+ 582 006b 00       		.byte	0
+ 583 006c 00       		.byte	0
+ 584 006d 09       		.uleb128 0x9
+ 585 006e 34       		.uleb128 0x34
+ 586 006f 00       		.byte	0
+ 587 0070 03       		.uleb128 0x3
+ 588 0071 0E       		.uleb128 0xe
+ 589 0072 3A       		.uleb128 0x3a
+ 590 0073 0B       		.uleb128 0xb
+ 591 0074 3B       		.uleb128 0x3b
+ 592 0075 0B       		.uleb128 0xb
+ 593 0076 49       		.uleb128 0x49
+ 594 0077 13       		.uleb128 0x13
+ 595 0078 02       		.uleb128 0x2
+ 596 0079 18       		.uleb128 0x18
+ 597 007a 00       		.byte	0
+ 598 007b 00       		.byte	0
+ 599 007c 0A       		.uleb128 0xa
+ 600 007d 2E       		.uleb128 0x2e
+ 601 007e 00       		.byte	0
+ 602 007f 3F       		.uleb128 0x3f
+ 603 0080 19       		.uleb128 0x19
+ 604 0081 03       		.uleb128 0x3
+ 605 0082 0E       		.uleb128 0xe
+ 606 0083 3A       		.uleb128 0x3a
+ 607 0084 0B       		.uleb128 0xb
+ 608 0085 3B       		.uleb128 0x3b
+ 609 0086 0B       		.uleb128 0xb
+ 610 0087 27       		.uleb128 0x27
+ 611 0088 19       		.uleb128 0x19
+ 612 0089 49       		.uleb128 0x49
+ 613 008a 13       		.uleb128 0x13
+ 614 008b 11       		.uleb128 0x11
+ 615 008c 01       		.uleb128 0x1
+ 616 008d 12       		.uleb128 0x12
+ 617 008e 06       		.uleb128 0x6
+ 618 008f 40       		.uleb128 0x40
+ 619 0090 18       		.uleb128 0x18
+ 620 0091 9742     		.uleb128 0x2117
+ 621 0093 19       		.uleb128 0x19
+ 622 0094 00       		.byte	0
+ 623 0095 00       		.byte	0
+ 624 0096 00       		.byte	0
+ 625              		.section	.debug_aranges,"",%progbits
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 14
+
+
+ 626 0000 24000000 		.4byte	0x24
+ 627 0004 0200     		.2byte	0x2
+ 628 0006 00000000 		.4byte	.Ldebug_info0
+ 629 000a 04       		.byte	0x4
+ 630 000b 00       		.byte	0
+ 631 000c 0000     		.2byte	0
+ 632 000e 0000     		.2byte	0
+ 633 0010 00000000 		.4byte	.LFB37
+ 634 0014 98000000 		.4byte	.LFE37-.LFB37
+ 635 0018 00000000 		.4byte	.LFB38
+ 636 001c 14000000 		.4byte	.LFE38-.LFB38
+ 637 0020 00000000 		.4byte	0
+ 638 0024 00000000 		.4byte	0
+ 639              		.section	.debug_ranges,"",%progbits
+ 640              	.Ldebug_ranges0:
+ 641 0000 00000000 		.4byte	.LFB37
+ 642 0004 98000000 		.4byte	.LFE37
+ 643 0008 00000000 		.4byte	.LFB38
+ 644 000c 14000000 		.4byte	.LFE38
+ 645 0010 00000000 		.4byte	0
+ 646 0014 00000000 		.4byte	0
+ 647              		.section	.debug_line,"",%progbits
+ 648              	.Ldebug_line0:
+ 649 0000 8B000000 		.section	.debug_str,"MS",%progbits,1
+ 649      02005500 
+ 649      00000201 
+ 649      FB0E0D00 
+ 649      01010101 
+ 650              	.LASF81:
+ 651 0000 4765744D 		.ascii	"GetMeasuredBatteryVoltage\000"
+ 651      65617375 
+ 651      72656442 
+ 651      61747465 
+ 651      7279566F 
+ 652              	.LASF25:
+ 653 001a 4359424C 		.ascii	"CYBLE_EVT_GAP_PASSKEY_ENTRY_REQUEST\000"
+ 653      455F4556 
+ 653      545F4741 
+ 653      505F5041 
+ 653      53534B45 
+ 654              	.LASF74:
+ 655 003e 61646352 		.ascii	"adcResult\000"
+ 655      6573756C 
+ 655      7400
+ 656              	.LASF2:
+ 657 0048 73686F72 		.ascii	"short int\000"
+ 657      7420696E 
+ 657      7400
+ 658              	.LASF28:
+ 659 0052 4359424C 		.ascii	"CYBLE_EVT_GAP_AUTH_FAILED\000"
+ 659      455F4556 
+ 659      545F4741 
+ 659      505F4155 
+ 659      54485F46 
+ 660              	.LASF16:
+ 661 006c 73697A65 		.ascii	"sizetype\000"
+ 661      74797065 
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 15
+
+
+ 661      00
+ 662              	.LASF78:
+ 663 0075 2E5C4261 		.ascii	".\\Battery.c\000"
+ 663      74746572 
+ 663      792E6300 
+ 664              	.LASF36:
+ 665 0081 4359424C 		.ascii	"CYBLE_EVT_GATTC_ERROR_RSP\000"
+ 665      455F4556 
+ 665      545F4741 
+ 665      5454435F 
+ 665      4552524F 
+ 666              	.LASF21:
+ 667 009b 4359424C 		.ascii	"CYBLE_EVT_HCI_STATUS\000"
+ 667      455F4556 
+ 667      545F4843 
+ 667      495F5354 
+ 667      41545553 
+ 668              	.LASF42:
+ 669 00b0 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_BY_TYPE_RSP\000"
+ 669      455F4556 
+ 669      545F4741 
+ 669      5454435F 
+ 669      52454144 
+ 670              	.LASF18:
+ 671 00d1 4359424C 		.ascii	"CYBLE_EVT_STACK_ON\000"
+ 671      455F4556 
+ 671      545F5354 
+ 671      41434B5F 
+ 671      4F4E00
+ 672              	.LASF39:
+ 673 00e4 4359424C 		.ascii	"CYBLE_EVT_GATTS_XCNHG_MTU_REQ\000"
+ 673      455F4556 
+ 673      545F4741 
+ 673      5454535F 
+ 673      58434E48 
+ 674              	.LASF9:
+ 675 0102 75696E74 		.ascii	"uint16\000"
+ 675      313600
+ 676              	.LASF11:
+ 677 0109 696E7431 		.ascii	"int16\000"
+ 677      3600
+ 678              	.LASF35:
+ 679 010f 4359424C 		.ascii	"CYBLE_EVT_GAP_KEYINFO_EXCHNGE_CMPLT\000"
+ 679      455F4556 
+ 679      545F4741 
+ 679      505F4B45 
+ 679      59494E46 
+ 680              	.LASF47:
+ 681 0133 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_MULTI_RSP\000"
+ 681      455F4556 
+ 681      545F4741 
+ 681      5454435F 
+ 681      52454144 
+ 682              	.LASF56:
+ 683 0152 4359424C 		.ascii	"CYBLE_EVT_GATTS_HANDLE_VALUE_CNF\000"
+ 683      455F4556 
+ 683      545F4741 
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 16
+
+
+ 683      5454535F 
+ 683      48414E44 
+ 684              	.LASF17:
+ 685 0173 4359424C 		.ascii	"CYBLE_EVT_HOST_INVALID\000"
+ 685      455F4556 
+ 685      545F484F 
+ 685      53545F49 
+ 685      4E56414C 
+ 686              	.LASF63:
+ 687 018a 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_CONN_IND\000"
+ 687      455F4556 
+ 687      545F4C32 
+ 687      4341505F 
+ 687      43424643 
+ 688              	.LASF66:
+ 689 01a8 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_DISCONN_CNF\000"
+ 689      455F4556 
+ 689      545F4C32 
+ 689      4341505F 
+ 689      43424643 
+ 690              	.LASF12:
+ 691 01c9 666C6F61 		.ascii	"float\000"
+ 691      7400
+ 692              	.LASF45:
+ 693 01cf 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_RSP\000"
+ 693      455F4556 
+ 693      545F4741 
+ 693      5454435F 
+ 693      52454144 
+ 694              	.LASF49:
+ 695 01e8 4359424C 		.ascii	"CYBLE_EVT_GATTC_WRITE_RSP\000"
+ 695      455F4556 
+ 695      545F4741 
+ 695      5454435F 
+ 695      57524954 
+ 696              	.LASF6:
+ 697 0202 6C6F6E67 		.ascii	"long long int\000"
+ 697      206C6F6E 
+ 697      6720696E 
+ 697      7400
+ 698              	.LASF7:
+ 699 0210 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 699      206C6F6E 
+ 699      6720756E 
+ 699      7369676E 
+ 699      65642069 
+ 700              	.LASF4:
+ 701 0227 6C6F6E67 		.ascii	"long int\000"
+ 701      20696E74 
+ 701      00
+ 702              	.LASF55:
+ 703 0230 4359424C 		.ascii	"CYBLE_EVT_GATTC_HANDLE_VALUE_IND\000"
+ 703      455F4556 
+ 703      545F4741 
+ 703      5454435F 
+ 703      48414E44 
+ 704              	.LASF30:
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 17
+
+
+ 705 0251 4359424C 		.ascii	"CYBLE_EVT_GAP_DEVICE_CONNECTED\000"
+ 705      455F4556 
+ 705      545F4741 
+ 705      505F4445 
+ 705      56494345 
+ 706              	.LASF29:
+ 707 0270 4359424C 		.ascii	"CYBLE_EVT_GAPP_ADVERTISEMENT_START_STOP\000"
+ 707      455F4556 
+ 707      545F4741 
+ 707      50505F41 
+ 707      44564552 
+ 708              	.LASF54:
+ 709 0298 4359424C 		.ascii	"CYBLE_EVT_GATTC_HANDLE_VALUE_NTF\000"
+ 709      455F4556 
+ 709      545F4741 
+ 709      5454435F 
+ 709      48414E44 
+ 710              	.LASF22:
+ 711 02b9 4359424C 		.ascii	"CYBLE_EVT_STACK_BUSY_STATUS\000"
+ 711      455F4556 
+ 711      545F5354 
+ 711      41434B5F 
+ 711      42555359 
+ 712              	.LASF26:
+ 713 02d5 4359424C 		.ascii	"CYBLE_EVT_GAP_PASSKEY_DISPLAY_REQUEST\000"
+ 713      455F4556 
+ 713      545F4741 
+ 713      505F5041 
+ 713      53534B45 
+ 714              	.LASF80:
+ 715 02fb 4D656173 		.ascii	"MeasureBattery\000"
+ 715      75726542 
+ 715      61747465 
+ 715      727900
+ 716              	.LASF64:
+ 717 030a 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_CONN_CNF\000"
+ 717      455F4556 
+ 717      545F4C32 
+ 717      4341505F 
+ 717      43424643 
+ 718              	.LASF73:
+ 719 0328 4359424C 		.ascii	"CYBLE_EVT_MAX\000"
+ 719      455F4556 
+ 719      545F4D41 
+ 719      5800
+ 720              	.LASF60:
+ 721 0336 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CONN_PARAM_UPDATE_REQ\000"
+ 721      455F4556 
+ 721      545F4C32 
+ 721      4341505F 
+ 721      434F4E4E 
+ 722              	.LASF1:
+ 723 035c 756E7369 		.ascii	"unsigned char\000"
+ 723      676E6564 
+ 723      20636861 
+ 723      7200
+ 724              	.LASF51:
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 18
+
+
+ 725 036a 4359424C 		.ascii	"CYBLE_EVT_GATTS_PREP_WRITE_REQ\000"
+ 725      455F4556 
+ 725      545F4741 
+ 725      5454535F 
+ 725      50524550 
+ 726              	.LASF72:
+ 727 0389 4359424C 		.ascii	"CYBLE_EVT_LE_PING_AUTH_TIMEOUT\000"
+ 727      455F4556 
+ 727      545F4C45 
+ 727      5F50494E 
+ 727      475F4155 
+ 728              	.LASF43:
+ 729 03a8 4359424C 		.ascii	"CYBLE_EVT_GATTC_FIND_INFO_RSP\000"
+ 729      455F4556 
+ 729      545F4741 
+ 729      5454435F 
+ 729      46494E44 
+ 730              	.LASF0:
+ 731 03c6 7369676E 		.ascii	"signed char\000"
+ 731      65642063 
+ 731      68617200 
+ 732              	.LASF48:
+ 733 03d2 4359424C 		.ascii	"CYBLE_EVT_GATTS_WRITE_REQ\000"
+ 733      455F4556 
+ 733      545F4741 
+ 733      5454535F 
+ 733      57524954 
+ 734              	.LASF44:
+ 735 03ec 4359424C 		.ascii	"CYBLE_EVT_GATTC_FIND_BY_TYPE_VALUE_RSP\000"
+ 735      455F4556 
+ 735      545F4741 
+ 735      5454435F 
+ 735      46494E44 
+ 736              	.LASF27:
+ 737 0413 4359424C 		.ascii	"CYBLE_EVT_GAP_AUTH_COMPLETE\000"
+ 737      455F4556 
+ 737      545F4741 
+ 737      505F4155 
+ 737      54485F43 
+ 738              	.LASF8:
+ 739 042f 756E7369 		.ascii	"unsigned int\000"
+ 739      676E6564 
+ 739      20696E74 
+ 739      00
+ 740              	.LASF37:
+ 741 043c 4359424C 		.ascii	"CYBLE_EVT_GATT_CONNECT_IND\000"
+ 741      455F4556 
+ 741      545F4741 
+ 741      54545F43 
+ 741      4F4E4E45 
+ 742              	.LASF5:
+ 743 0457 6C6F6E67 		.ascii	"long unsigned int\000"
+ 743      20756E73 
+ 743      69676E65 
+ 743      6420696E 
+ 743      7400
+ 744              	.LASF24:
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 19
+
+
+ 745 0469 4359424C 		.ascii	"CYBLE_EVT_GAP_AUTH_REQ\000"
+ 745      455F4556 
+ 745      545F4741 
+ 745      505F4155 
+ 745      54485F52 
+ 746              	.LASF65:
+ 747 0480 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_DISCONN_IND\000"
+ 747      455F4556 
+ 747      545F4C32 
+ 747      4341505F 
+ 747      43424643 
+ 748              	.LASF32:
+ 749 04a1 4359424C 		.ascii	"CYBLE_EVT_GAP_ENCRYPT_CHANGE\000"
+ 749      455F4556 
+ 749      545F4741 
+ 749      505F454E 
+ 749      43525950 
+ 750              	.LASF15:
+ 751 04be 72656733 		.ascii	"reg32\000"
+ 751      3200
+ 752              	.LASF3:
+ 753 04c4 73686F72 		.ascii	"short unsigned int\000"
+ 753      7420756E 
+ 753      7369676E 
+ 753      65642069 
+ 753      6E7400
+ 754              	.LASF33:
+ 755 04d7 4359424C 		.ascii	"CYBLE_EVT_GAP_CONNECTION_UPDATE_COMPLETE\000"
+ 755      455F4556 
+ 755      545F4741 
+ 755      505F434F 
+ 755      4E4E4543 
+ 756              	.LASF14:
+ 757 0500 63686172 		.ascii	"char\000"
+ 757      00
+ 758              	.LASF77:
+ 759 0505 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 759      4320342E 
+ 759      392E3320 
+ 759      32303135 
+ 759      30333033 
+ 760 0538 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0 -mthumb -g -O"
+ 760      20726576 
+ 760      6973696F 
+ 760      6E203232 
+ 760      31323230 
+ 761 056b 30202D66 		.ascii	"0 -ffunction-sections -ffat-lto-objects\000"
+ 761      66756E63 
+ 761      74696F6E 
+ 761      2D736563 
+ 761      74696F6E 
+ 762              	.LASF62:
+ 763 0593 4359424C 		.ascii	"CYBLE_EVT_L2CAP_COMMAND_REJ\000"
+ 763      455F4556 
+ 763      545F4C32 
+ 763      4341505F 
+ 763      434F4D4D 
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 20
+
+
+ 764              	.LASF46:
+ 765 05af 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_BLOB_RSP\000"
+ 765      455F4556 
+ 765      545F4741 
+ 765      5454435F 
+ 765      52454144 
+ 766              	.LASF79:
+ 767 05cd 433A5C55 		.ascii	"C:\\Users\\Johnny K\\Desktop\\PSoC_4_BLE_Eddystone_"
+ 767      73657273 
+ 767      5C4A6F68 
+ 767      6E6E7920 
+ 767      4B5C4465 
+ 768 05fc 436F7079 		.ascii	"Copy_01.cydsn (2)\\PSoC_4_BLE_Eddystone_Copy_01_Cop"
+ 768      5F30312E 
+ 768      63796473 
+ 768      6E202832 
+ 768      295C5053 
+ 769 062e 795F3033 		.ascii	"y_03.cydsn\000"
+ 769      2E637964 
+ 769      736E00
+ 770              	.LASF53:
+ 771 0639 4359424C 		.ascii	"CYBLE_EVT_GATTC_EXEC_WRITE_RSP\000"
+ 771      455F4556 
+ 771      545F4741 
+ 771      5454435F 
+ 771      45584543 
+ 772              	.LASF10:
+ 773 0658 75696E74 		.ascii	"uint32\000"
+ 773      333200
+ 774              	.LASF71:
+ 775 065f 4359424C 		.ascii	"CYBLE_EVT_PENDING_FLASH_WRITE\000"
+ 775      455F4556 
+ 775      545F5045 
+ 775      4E44494E 
+ 775      475F464C 
+ 776              	.LASF68:
+ 777 067d 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_RX_CREDIT_IND\000"
+ 777      455F4556 
+ 777      545F4C32 
+ 777      4341505F 
+ 777      43424643 
+ 778              	.LASF13:
+ 779 06a0 646F7562 		.ascii	"double\000"
+ 779      6C6500
+ 780              	.LASF75:
+ 781 06a7 73617243 		.ascii	"sarControlReg\000"
+ 781      6F6E7472 
+ 781      6F6C5265 
+ 781      6700
+ 782              	.LASF69:
+ 783 06b5 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_TX_CREDIT_IND\000"
+ 783      455F4556 
+ 783      545F4C32 
+ 783      4341505F 
+ 783      43424643 
+ 784              	.LASF20:
+ 785 06d8 4359424C 		.ascii	"CYBLE_EVT_HARDWARE_ERROR\000"
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 21
+
+
+ 785      455F4556 
+ 785      545F4841 
+ 785      52445741 
+ 785      52455F45 
+ 786              	.LASF67:
+ 787 06f1 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_DATA_READ\000"
+ 787      455F4556 
+ 787      545F4C32 
+ 787      4341505F 
+ 787      43424643 
+ 788              	.LASF61:
+ 789 0710 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CONN_PARAM_UPDATE_RSP\000"
+ 789      455F4556 
+ 789      545F4C32 
+ 789      4341505F 
+ 789      434F4E4E 
+ 790              	.LASF23:
+ 791 0736 4359424C 		.ascii	"CYBLE_EVT_GAPC_SCAN_PROGRESS_RESULT\000"
+ 791      455F4556 
+ 791      545F4741 
+ 791      50435F53 
+ 791      43414E5F 
+ 792              	.LASF41:
+ 793 075a 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_BY_GROUP_TYPE_RSP\000"
+ 793      455F4556 
+ 793      545F4741 
+ 793      5454435F 
+ 793      52454144 
+ 794              	.LASF50:
+ 795 0781 4359424C 		.ascii	"CYBLE_EVT_GATTS_WRITE_CMD_REQ\000"
+ 795      455F4556 
+ 795      545F4741 
+ 795      5454535F 
+ 795      57524954 
+ 796              	.LASF40:
+ 797 079f 4359424C 		.ascii	"CYBLE_EVT_GATTC_XCHNG_MTU_RSP\000"
+ 797      455F4556 
+ 797      545F4741 
+ 797      5454435F 
+ 797      5843484E 
+ 798              	.LASF19:
+ 799 07bd 4359424C 		.ascii	"CYBLE_EVT_TIMEOUT\000"
+ 799      455F4556 
+ 799      545F5449 
+ 799      4D454F55 
+ 799      5400
+ 800              	.LASF70:
+ 801 07cf 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_DATA_WRITE_IND\000"
+ 801      455F4556 
+ 801      545F4C32 
+ 801      4341505F 
+ 801      43424643 
+ 802              	.LASF34:
+ 803 07f3 4359424C 		.ascii	"CYBLE_EVT_GAPC_SCAN_START_STOP\000"
+ 803      455F4556 
+ 803      545F4741 
+ 803      50435F53 
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\ccZ1h7QL.s 			page 22
+
+
+ 803      43414E5F 
+ 804              	.LASF59:
+ 805 0812 4359424C 		.ascii	"CYBLE_EVT_GATTS_READ_CHAR_VAL_ACCESS_REQ\000"
+ 805      455F4556 
+ 805      545F4741 
+ 805      5454535F 
+ 805      52454144 
+ 806              	.LASF58:
+ 807 083b 4359424C 		.ascii	"CYBLE_EVT_GATTC_STOP_CMD_COMPLETE\000"
+ 807      455F4556 
+ 807      545F4741 
+ 807      5454435F 
+ 807      53544F50 
+ 808              	.LASF52:
+ 809 085d 4359424C 		.ascii	"CYBLE_EVT_GATTS_EXEC_WRITE_REQ\000"
+ 809      455F4556 
+ 809      545F4741 
+ 809      5454535F 
+ 809      45584543 
+ 810              	.LASF76:
+ 811 087c 62617474 		.ascii	"batteryLevelmVolts\000"
+ 811      6572794C 
+ 811      6576656C 
+ 811      6D566F6C 
+ 811      747300
+ 812              	.LASF31:
+ 813 088f 4359424C 		.ascii	"CYBLE_EVT_GAP_DEVICE_DISCONNECTED\000"
+ 813      455F4556 
+ 813      545F4741 
+ 813      505F4445 
+ 813      56494345 
+ 814              	.LASF57:
+ 815 08b1 4359424C 		.ascii	"CYBLE_EVT_GATTS_DATA_SIGNED_CMD_REQ\000"
+ 815      455F4556 
+ 815      545F4741 
+ 815      5454535F 
+ 815      44415441 
+ 816              	.LASF38:
+ 817 08d5 4359424C 		.ascii	"CYBLE_EVT_GATT_DISCONNECT_IND\000"
+ 817      455F4556 
+ 817      545F4741 
+ 817      54545F44 
+ 817      4953434F 
+ 818              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br

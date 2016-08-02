@@ -1,0 +1,1215 @@
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 1
+
+
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"Temperature.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.bss
+  18              		.align	1
+  19              	measuredTempratureCelsius:
+  20 0000 0000     		.space	2
+  21              		.section	.text.MeasureTemperature,"ax",%progbits
+  22              		.align	2
+  23              		.global	MeasureTemperature
+  24              		.code	16
+  25              		.thumb_func
+  26              		.type	MeasureTemperature, %function
+  27              	MeasureTemperature:
+  28              	.LFB37:
+  29              		.file 1 ".\\Temperature.c"
+   1:.\Temperature.c **** /******************************************************************************
+   2:.\Temperature.c **** * Project Name      : PSoC_4_BLE_Eddystone
+   3:.\Temperature.c **** * File Name         : Temperature.c
+   4:.\Temperature.c **** * Version           : 1.0
+   5:.\Temperature.c **** * Device Used       : CY8C4247LQI-BL483
+   6:.\Temperature.c **** * Software Used     : PSoC Creator 3.3 SP1
+   7:.\Temperature.c **** * Compiler          : ARM GCC 4.9.3, ARM MDK Generic
+   8:.\Temperature.c **** * Related Hardware  : CY8CKIT-042-BLE Bluetooth Low Energy Pioneer Kit
+   9:.\Temperature.c **** * Owner             : DEJO
+  10:.\Temperature.c **** *
+  11:.\Temperature.c **** ********************************************************************************
+  12:.\Temperature.c **** * Copyright (2016), Cypress Semiconductor Corporation. All Rights Reserved.
+  13:.\Temperature.c **** ********************************************************************************
+  14:.\Temperature.c **** * This software is owned by Cypress Semiconductor Corporation (Cypress)
+  15:.\Temperature.c **** * and is protected by and subject to worldwide patent protection (United
+  16:.\Temperature.c **** * States and foreign), United States copyright laws and international treaty
+  17:.\Temperature.c **** * provisions. Cypress hereby grants to licensee a personal, non-exclusive,
+  18:.\Temperature.c **** * non-transferable license to copy, use, modify, create derivative works of,
+  19:.\Temperature.c **** * and compile the Cypress Source Code and derivative works for the sole
+  20:.\Temperature.c **** * purpose of creating custom software in support of licensee product to be
+  21:.\Temperature.c **** * used only in conjunction with a Cypress integrated circuit as specified in
+  22:.\Temperature.c **** * the applicable agreement. Any reproduction, modification, translation,
+  23:.\Temperature.c **** * compilation, or representation of this software except as specified above
+  24:.\Temperature.c **** * is prohibited without the express written permission of Cypress.
+  25:.\Temperature.c **** *
+  26:.\Temperature.c **** * Disclaimer: CYPRESS MAKES NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, WITH
+  27:.\Temperature.c **** * REGARD TO THIS MATERIAL, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  28:.\Temperature.c **** * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 2
+
+
+  29:.\Temperature.c **** * Cypress reserves the right to make changes without further notice to the
+  30:.\Temperature.c **** * materials described herein. Cypress does not assume any liability arising out
+  31:.\Temperature.c **** * of the application or use of any product or circuit described herein. Cypress
+  32:.\Temperature.c **** * does not authorize its products for use as critical components in life-support
+  33:.\Temperature.c **** * systems where a malfunction or failure may reasonably be expected to result in
+  34:.\Temperature.c **** * significant injury to the user. The inclusion of Cypress' product in a life-
+  35:.\Temperature.c **** * support systems application implies that the manufacturer assumes all risk of
+  36:.\Temperature.c **** * such use and in doing so indemnifies Cypress against all charges.
+  37:.\Temperature.c **** *
+  38:.\Temperature.c **** * Use of this Software may be limited by and subject to the applicable Cypress
+  39:.\Temperature.c **** * software license agreement.
+  40:.\Temperature.c **** *******************************************************************************/
+  41:.\Temperature.c **** #include "main.h"
+  42:.\Temperature.c **** #include "Temperature.h"
+  43:.\Temperature.c **** 
+  44:.\Temperature.c **** /* Stores measured temperature in celsius */
+  45:.\Temperature.c **** static uint16 measuredTempratureCelsius;
+  46:.\Temperature.c **** 
+  47:.\Temperature.c **** /*******************************************************************************
+  48:.\Temperature.c **** * Function Name: MeasureTemperature
+  49:.\Temperature.c **** ********************************************************************************
+  50:.\Temperature.c **** *
+  51:.\Temperature.c **** * Summary:
+  52:.\Temperature.c **** *   This function measures the die temperature and stores it.
+  53:.\Temperature.c **** *
+  54:.\Temperature.c **** * Parameters:
+  55:.\Temperature.c **** *  None
+  56:.\Temperature.c **** *
+  57:.\Temperature.c **** * Return:
+  58:.\Temperature.c **** *  None
+  59:.\Temperature.c **** *
+  60:.\Temperature.c **** *******************************************************************************/
+  61:.\Temperature.c **** void MeasureTemperature(void)
+  62:.\Temperature.c **** {
+  30              		.loc 1 62 0
+  31              		.cfi_startproc
+  32 0000 80B5     		push	{r7, lr}
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 7, -8
+  35              		.cfi_offset 14, -4
+  36 0002 82B0     		sub	sp, sp, #8
+  37              		.cfi_def_cfa_offset 16
+  38 0004 00AF     		add	r7, sp, #0
+  39              		.cfi_def_cfa_register 7
+  63:.\Temperature.c ****     int32 ADCCountsCorrected;
+  64:.\Temperature.c **** 
+  65:.\Temperature.c ****     /* Wakeup ADC from sleep for measurements. */
+  66:.\Temperature.c ****     ADC_Wakeup();
+  40              		.loc 1 66 0
+  41 0006 FFF7FEFF 		bl	ADC_Wakeup
+  67:.\Temperature.c **** 
+  68:.\Temperature.c ****     /* Enables injection channel and performs a measurement. */
+  69:.\Temperature.c ****     ADC_StartConvert();
+  42              		.loc 1 69 0
+  43 000a FFF7FEFF 		bl	ADC_StartConvert
+  70:.\Temperature.c ****     ADC_IsEndConversion(ADC_WAIT_FOR_RESULT);
+  44              		.loc 1 70 0
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 3
+
+
+  45 000e 0220     		mov	r0, #2
+  46 0010 FFF7FEFF 		bl	ADC_IsEndConversion
+  71:.\Temperature.c **** 
+  72:.\Temperature.c ****     /* Read result and adjust data from ADC with respect to Vref value. */
+  73:.\Temperature.c ****     ADCCountsCorrected = ADC_DEFAULT_VREF_MV_VALUE *
+  74:.\Temperature.c ****                          ADC_GetResult16(ADC_TEMPERATURE_CHANNEL) /
+  47              		.loc 1 74 0
+  48 0014 0120     		mov	r0, #1
+  49 0016 FFF7FEFF 		bl	ADC_GetResult16
+  50 001a 031C     		mov	r3, r0
+  73:.\Temperature.c ****                          ADC_GetResult16(ADC_TEMPERATURE_CHANNEL) /
+  51              		.loc 1 73 0
+  52 001c 9B02     		lsl	r3, r3, #10
+  53              		.loc 1 74 0
+  54 001e 9B0A     		lsr	r3, r3, #10
+  73:.\Temperature.c ****                          ADC_GetResult16(ADC_TEMPERATURE_CHANNEL) /
+  55              		.loc 1 73 0
+  56 0020 7B60     		str	r3, [r7, #4]
+  75:.\Temperature.c ****                          ADC_DEF_TEMP_REF;
+  76:.\Temperature.c **** 
+  77:.\Temperature.c ****     /* Convert the ADC output to degrees Celsius. */
+  78:.\Temperature.c ****     measuredTempratureCelsius =
+  79:.\Temperature.c ****                 (uint16)(DieTemp_CountsTo_Celsius(ADCCountsCorrected) * 256);
+  57              		.loc 1 79 0
+  58 0022 7B68     		ldr	r3, [r7, #4]
+  59 0024 181C     		mov	r0, r3
+  60 0026 FFF7FEFF 		bl	DieTemp_CountsTo_Celsius
+  61 002a 031C     		mov	r3, r0
+  62 002c 9BB2     		uxth	r3, r3
+  63 002e 1B02     		lsl	r3, r3, #8
+  64 0030 9AB2     		uxth	r2, r3
+  78:.\Temperature.c ****                 (uint16)(DieTemp_CountsTo_Celsius(ADCCountsCorrected) * 256);
+  65              		.loc 1 78 0
+  66 0032 034B     		ldr	r3, .L2
+  67 0034 1A80     		strh	r2, [r3]
+  80:.\Temperature.c **** 
+  81:.\Temperature.c ****     /* Put ADC to sleep after measurements are done. */
+  82:.\Temperature.c ****     ADC_Sleep();
+  68              		.loc 1 82 0
+  69 0036 FFF7FEFF 		bl	ADC_Sleep
+  83:.\Temperature.c **** }
+  70              		.loc 1 83 0
+  71 003a BD46     		mov	sp, r7
+  72 003c 02B0     		add	sp, sp, #8
+  73              		@ sp needed
+  74 003e 80BD     		pop	{r7, pc}
+  75              	.L3:
+  76              		.align	2
+  77              	.L2:
+  78 0040 00000000 		.word	measuredTempratureCelsius
+  79              		.cfi_endproc
+  80              	.LFE37:
+  81              		.size	MeasureTemperature, .-MeasureTemperature
+  82              		.section	.text.GetMeasuredTemprature,"ax",%progbits
+  83              		.align	2
+  84              		.global	GetMeasuredTemprature
+  85              		.code	16
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 4
+
+
+  86              		.thumb_func
+  87              		.type	GetMeasuredTemprature, %function
+  88              	GetMeasuredTemprature:
+  89              	.LFB38:
+  84:.\Temperature.c **** 
+  85:.\Temperature.c **** /*******************************************************************************
+  86:.\Temperature.c **** * Function Name: GetMeasuredTemprature
+  87:.\Temperature.c **** ********************************************************************************
+  88:.\Temperature.c **** *
+  89:.\Temperature.c **** * Summary:
+  90:.\Temperature.c **** *   This function returns currently measured die temperature.
+  91:.\Temperature.c **** *
+  92:.\Temperature.c **** * Parameters:
+  93:.\Temperature.c **** *  None
+  94:.\Temperature.c **** *
+  95:.\Temperature.c **** * Return:
+  96:.\Temperature.c **** *  uint16: currently measured temperature
+  97:.\Temperature.c **** *
+  98:.\Temperature.c **** *******************************************************************************/
+  99:.\Temperature.c **** uint16 GetMeasuredTemprature(void)
+ 100:.\Temperature.c **** {
+  90              		.loc 1 100 0
+  91              		.cfi_startproc
+  92 0000 80B5     		push	{r7, lr}
+  93              		.cfi_def_cfa_offset 8
+  94              		.cfi_offset 7, -8
+  95              		.cfi_offset 14, -4
+  96 0002 00AF     		add	r7, sp, #0
+  97              		.cfi_def_cfa_register 7
+ 101:.\Temperature.c ****     return measuredTempratureCelsius;
+  98              		.loc 1 101 0
+  99 0004 024B     		ldr	r3, .L6
+ 100 0006 1B88     		ldrh	r3, [r3]
+ 102:.\Temperature.c **** }
+ 101              		.loc 1 102 0
+ 102 0008 181C     		mov	r0, r3
+ 103 000a BD46     		mov	sp, r7
+ 104              		@ sp needed
+ 105 000c 80BD     		pop	{r7, pc}
+ 106              	.L7:
+ 107 000e C046     		.align	2
+ 108              	.L6:
+ 109 0010 00000000 		.word	measuredTempratureCelsius
+ 110              		.cfi_endproc
+ 111              	.LFE38:
+ 112              		.size	GetMeasuredTemprature, .-GetMeasuredTemprature
+ 113              		.text
+ 114              	.Letext0:
+ 115              		.file 2 "Generated_Source\\PSoC4/cytypes.h"
+ 116              		.file 3 "Generated_Source\\PSoC4/BLE_Stack.h"
+ 117              		.section	.debug_info,"",%progbits
+ 118              	.Ldebug_info0:
+ 119 0000 6B020000 		.4byte	0x26b
+ 120 0004 0400     		.2byte	0x4
+ 121 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 122 000a 04       		.byte	0x4
+ 123 000b 01       		.uleb128 0x1
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 5
+
+
+ 124 000c 06050000 		.4byte	.LASF74
+ 125 0010 01       		.byte	0x1
+ 126 0011 77000000 		.4byte	.LASF75
+ 127 0015 CE050000 		.4byte	.LASF76
+ 128 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 129 001d 00000000 		.4byte	0
+ 130 0021 00000000 		.4byte	.Ldebug_line0
+ 131 0025 02       		.uleb128 0x2
+ 132 0026 01       		.byte	0x1
+ 133 0027 06       		.byte	0x6
+ 134 0028 CD030000 		.4byte	.LASF0
+ 135 002c 02       		.uleb128 0x2
+ 136 002d 01       		.byte	0x1
+ 137 002e 08       		.byte	0x8
+ 138 002f 63030000 		.4byte	.LASF1
+ 139 0033 02       		.uleb128 0x2
+ 140 0034 02       		.byte	0x2
+ 141 0035 05       		.byte	0x5
+ 142 0036 4A000000 		.4byte	.LASF2
+ 143 003a 02       		.uleb128 0x2
+ 144 003b 02       		.byte	0x2
+ 145 003c 07       		.byte	0x7
+ 146 003d C5040000 		.4byte	.LASF3
+ 147 0041 02       		.uleb128 0x2
+ 148 0042 04       		.byte	0x4
+ 149 0043 05       		.byte	0x5
+ 150 0044 3D020000 		.4byte	.LASF4
+ 151 0048 02       		.uleb128 0x2
+ 152 0049 04       		.byte	0x4
+ 153 004a 07       		.byte	0x7
+ 154 004b 5E040000 		.4byte	.LASF5
+ 155 004f 02       		.uleb128 0x2
+ 156 0050 08       		.byte	0x8
+ 157 0051 05       		.byte	0x5
+ 158 0052 02020000 		.4byte	.LASF6
+ 159 0056 02       		.uleb128 0x2
+ 160 0057 08       		.byte	0x8
+ 161 0058 07       		.byte	0x7
+ 162 0059 10020000 		.4byte	.LASF7
+ 163 005d 03       		.uleb128 0x3
+ 164 005e 04       		.byte	0x4
+ 165 005f 05       		.byte	0x5
+ 166 0060 696E7400 		.ascii	"int\000"
+ 167 0064 02       		.uleb128 0x2
+ 168 0065 04       		.byte	0x4
+ 169 0066 07       		.byte	0x7
+ 170 0067 36040000 		.4byte	.LASF8
+ 171 006b 04       		.uleb128 0x4
+ 172 006c 08010000 		.4byte	.LASF9
+ 173 0070 02       		.byte	0x2
+ 174 0071 3901     		.2byte	0x139
+ 175 0073 3A000000 		.4byte	0x3a
+ 176 0077 04       		.uleb128 0x4
+ 177 0078 B9060000 		.4byte	.LASF10
+ 178 007c 02       		.byte	0x2
+ 179 007d 3D01     		.2byte	0x13d
+ 180 007f 41000000 		.4byte	0x41
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 6
+
+
+ 181 0083 02       		.uleb128 0x2
+ 182 0084 04       		.byte	0x4
+ 183 0085 04       		.byte	0x4
+ 184 0086 C9010000 		.4byte	.LASF11
+ 185 008a 02       		.uleb128 0x2
+ 186 008b 08       		.byte	0x8
+ 187 008c 04       		.byte	0x4
+ 188 008d BF060000 		.4byte	.LASF12
+ 189 0091 02       		.uleb128 0x2
+ 190 0092 01       		.byte	0x1
+ 191 0093 08       		.byte	0x8
+ 192 0094 01050000 		.4byte	.LASF13
+ 193 0098 02       		.uleb128 0x2
+ 194 0099 04       		.byte	0x4
+ 195 009a 07       		.byte	0x7
+ 196 009b 6E000000 		.4byte	.LASF14
+ 197 009f 05       		.uleb128 0x5
+ 198 00a0 01       		.byte	0x1
+ 199 00a1 03       		.byte	0x3
+ 200 00a2 A4       		.byte	0xa4
+ 201 00a3 24020000 		.4byte	0x224
+ 202 00a7 06       		.uleb128 0x6
+ 203 00a8 73010000 		.4byte	.LASF15
+ 204 00ac 00       		.sleb128 0
+ 205 00ad 06       		.uleb128 0x6
+ 206 00ae D7000000 		.4byte	.LASF16
+ 207 00b2 01       		.sleb128 1
+ 208 00b3 06       		.uleb128 0x6
+ 209 00b4 0C080000 		.4byte	.LASF17
+ 210 00b8 02       		.sleb128 2
+ 211 00b9 06       		.uleb128 0x6
+ 212 00ba E9060000 		.4byte	.LASF18
+ 213 00be 03       		.sleb128 3
+ 214 00bf 06       		.uleb128 0x6
+ 215 00c0 A1000000 		.4byte	.LASF19
+ 216 00c4 04       		.sleb128 4
+ 217 00c5 06       		.uleb128 0x6
+ 218 00c6 CF020000 		.4byte	.LASF20
+ 219 00ca 05       		.sleb128 5
+ 220 00cb 06       		.uleb128 0x6
+ 221 00cc 47070000 		.4byte	.LASF21
+ 222 00d0 20       		.sleb128 32
+ 223 00d1 06       		.uleb128 0x6
+ 224 00d2 70040000 		.4byte	.LASF22
+ 225 00d6 21       		.sleb128 33
+ 226 00d7 06       		.uleb128 0x6
+ 227 00d8 00000000 		.4byte	.LASF23
+ 228 00dc 22       		.sleb128 34
+ 229 00dd 06       		.uleb128 0x6
+ 230 00de EB020000 		.4byte	.LASF24
+ 231 00e2 23       		.sleb128 35
+ 232 00e3 06       		.uleb128 0x6
+ 233 00e4 1A040000 		.4byte	.LASF25
+ 234 00e8 24       		.sleb128 36
+ 235 00e9 06       		.uleb128 0x6
+ 236 00ea 54000000 		.4byte	.LASF26
+ 237 00ee 25       		.sleb128 37
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 7
+
+
+ 238 00ef 06       		.uleb128 0x6
+ 239 00f0 86020000 		.4byte	.LASF27
+ 240 00f4 26       		.sleb128 38
+ 241 00f5 06       		.uleb128 0x6
+ 242 00f6 67020000 		.4byte	.LASF28
+ 243 00fa 27       		.sleb128 39
+ 244 00fb 06       		.uleb128 0x6
+ 245 00fc 88080000 		.4byte	.LASF29
+ 246 0100 28       		.sleb128 40
+ 247 0101 06       		.uleb128 0x6
+ 248 0102 A8040000 		.4byte	.LASF30
+ 249 0106 29       		.sleb128 41
+ 250 0107 06       		.uleb128 0x6
+ 251 0108 D8040000 		.4byte	.LASF31
+ 252 010c 2A       		.sleb128 42
+ 253 010d 06       		.uleb128 0x6
+ 254 010e 59060000 		.4byte	.LASF32
+ 255 0112 2B       		.sleb128 43
+ 256 0113 06       		.uleb128 0x6
+ 257 0114 0F010000 		.4byte	.LASF33
+ 258 0118 2C       		.sleb128 44
+ 259 0119 06       		.uleb128 0x6
+ 260 011a 87000000 		.4byte	.LASF34
+ 261 011e C000     		.sleb128 64
+ 262 0120 06       		.uleb128 0x6
+ 263 0121 43040000 		.4byte	.LASF35
+ 264 0125 C100     		.sleb128 65
+ 265 0127 06       		.uleb128 0x6
+ 266 0128 CE080000 		.4byte	.LASF36
+ 267 012c C200     		.sleb128 66
+ 268 012e 06       		.uleb128 0x6
+ 269 012f EA000000 		.4byte	.LASF37
+ 270 0133 C300     		.sleb128 67
+ 271 0135 06       		.uleb128 0x6
+ 272 0136 CA070000 		.4byte	.LASF38
+ 273 013a C400     		.sleb128 68
+ 274 013c 06       		.uleb128 0x6
+ 275 013d 85070000 		.4byte	.LASF39
+ 276 0141 C500     		.sleb128 69
+ 277 0143 06       		.uleb128 0x6
+ 278 0144 B6000000 		.4byte	.LASF40
+ 279 0148 C600     		.sleb128 70
+ 280 014a 06       		.uleb128 0x6
+ 281 014b AF030000 		.4byte	.LASF41
+ 282 014f C700     		.sleb128 71
+ 283 0151 06       		.uleb128 0x6
+ 284 0152 F3030000 		.4byte	.LASF42
+ 285 0156 C800     		.sleb128 72
+ 286 0158 06       		.uleb128 0x6
+ 287 0159 CF010000 		.4byte	.LASF43
+ 288 015d C900     		.sleb128 73
+ 289 015f 06       		.uleb128 0x6
+ 290 0160 B0050000 		.4byte	.LASF44
+ 291 0164 CA00     		.sleb128 74
+ 292 0166 06       		.uleb128 0x6
+ 293 0167 33010000 		.4byte	.LASF45
+ 294 016b CB00     		.sleb128 75
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 8
+
+
+ 295 016d 06       		.uleb128 0x6
+ 296 016e D9030000 		.4byte	.LASF46
+ 297 0172 CC00     		.sleb128 76
+ 298 0174 06       		.uleb128 0x6
+ 299 0175 E8010000 		.4byte	.LASF47
+ 300 0179 CD00     		.sleb128 77
+ 301 017b 06       		.uleb128 0x6
+ 302 017c AC070000 		.4byte	.LASF48
+ 303 0180 CE00     		.sleb128 78
+ 304 0182 06       		.uleb128 0x6
+ 305 0183 71030000 		.4byte	.LASF49
+ 306 0187 CF00     		.sleb128 79
+ 307 0189 06       		.uleb128 0x6
+ 308 018a 69080000 		.4byte	.LASF50
+ 309 018e D000     		.sleb128 80
+ 310 0190 06       		.uleb128 0x6
+ 311 0191 3A060000 		.4byte	.LASF51
+ 312 0195 D100     		.sleb128 81
+ 313 0197 06       		.uleb128 0x6
+ 314 0198 AE020000 		.4byte	.LASF52
+ 315 019c D200     		.sleb128 82
+ 316 019e 06       		.uleb128 0x6
+ 317 019f 46020000 		.4byte	.LASF53
+ 318 01a3 D300     		.sleb128 83
+ 319 01a5 06       		.uleb128 0x6
+ 320 01a6 52010000 		.4byte	.LASF54
+ 321 01aa D400     		.sleb128 84
+ 322 01ac 06       		.uleb128 0x6
+ 323 01ad AA080000 		.4byte	.LASF55
+ 324 01b1 D500     		.sleb128 85
+ 325 01b3 06       		.uleb128 0x6
+ 326 01b4 47080000 		.4byte	.LASF56
+ 327 01b8 D600     		.sleb128 86
+ 328 01ba 06       		.uleb128 0x6
+ 329 01bb 1E080000 		.4byte	.LASF57
+ 330 01bf D700     		.sleb128 87
+ 331 01c1 06       		.uleb128 0x6
+ 332 01c2 3D030000 		.4byte	.LASF58
+ 333 01c6 F000     		.sleb128 112
+ 334 01c8 06       		.uleb128 0x6
+ 335 01c9 21070000 		.4byte	.LASF59
+ 336 01cd F100     		.sleb128 113
+ 337 01cf 06       		.uleb128 0x6
+ 338 01d0 94050000 		.4byte	.LASF60
+ 339 01d4 F200     		.sleb128 114
+ 340 01d6 06       		.uleb128 0x6
+ 341 01d7 8A010000 		.4byte	.LASF61
+ 342 01db F300     		.sleb128 115
+ 343 01dd 06       		.uleb128 0x6
+ 344 01de 11030000 		.4byte	.LASF62
+ 345 01e2 F400     		.sleb128 116
+ 346 01e4 06       		.uleb128 0x6
+ 347 01e5 87040000 		.4byte	.LASF63
+ 348 01e9 F500     		.sleb128 117
+ 349 01eb 06       		.uleb128 0x6
+ 350 01ec A8010000 		.4byte	.LASF64
+ 351 01f0 F600     		.sleb128 118
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 9
+
+
+ 352 01f2 06       		.uleb128 0x6
+ 353 01f3 02070000 		.4byte	.LASF65
+ 354 01f7 F700     		.sleb128 119
+ 355 01f9 06       		.uleb128 0x6
+ 356 01fa 96060000 		.4byte	.LASF66
+ 357 01fe F800     		.sleb128 120
+ 358 0200 06       		.uleb128 0x6
+ 359 0201 C6060000 		.4byte	.LASF67
+ 360 0205 F900     		.sleb128 121
+ 361 0207 06       		.uleb128 0x6
+ 362 0208 E8070000 		.4byte	.LASF68
+ 363 020c FA00     		.sleb128 122
+ 364 020e 06       		.uleb128 0x6
+ 365 020f 78060000 		.4byte	.LASF69
+ 366 0213 FA01     		.sleb128 250
+ 367 0215 06       		.uleb128 0x6
+ 368 0216 90030000 		.4byte	.LASF70
+ 369 021a FB01     		.sleb128 251
+ 370 021c 06       		.uleb128 0x6
+ 371 021d 2F030000 		.4byte	.LASF71
+ 372 0221 FF01     		.sleb128 255
+ 373 0223 00       		.byte	0
+ 374 0224 07       		.uleb128 0x7
+ 375 0225 24000000 		.4byte	.LASF77
+ 376 0229 01       		.byte	0x1
+ 377 022a 3D       		.byte	0x3d
+ 378 022b 00000000 		.4byte	.LFB37
+ 379 022f 44000000 		.4byte	.LFE37-.LFB37
+ 380 0233 01       		.uleb128 0x1
+ 381 0234 9C       		.byte	0x9c
+ 382 0235 48020000 		.4byte	0x248
+ 383 0239 08       		.uleb128 0x8
+ 384 023a 37000000 		.4byte	.LASF72
+ 385 023e 01       		.byte	0x1
+ 386 023f 3F       		.byte	0x3f
+ 387 0240 77000000 		.4byte	0x77
+ 388 0244 02       		.uleb128 0x2
+ 389 0245 91       		.byte	0x91
+ 390 0246 74       		.sleb128 -12
+ 391 0247 00       		.byte	0
+ 392 0248 09       		.uleb128 0x9
+ 393 0249 27020000 		.4byte	.LASF78
+ 394 024d 01       		.byte	0x1
+ 395 024e 63       		.byte	0x63
+ 396 024f 6B000000 		.4byte	0x6b
+ 397 0253 00000000 		.4byte	.LFB38
+ 398 0257 14000000 		.4byte	.LFE38-.LFB38
+ 399 025b 01       		.uleb128 0x1
+ 400 025c 9C       		.byte	0x9c
+ 401 025d 08       		.uleb128 0x8
+ 402 025e 6B070000 		.4byte	.LASF73
+ 403 0262 01       		.byte	0x1
+ 404 0263 2D       		.byte	0x2d
+ 405 0264 6B000000 		.4byte	0x6b
+ 406 0268 05       		.uleb128 0x5
+ 407 0269 03       		.byte	0x3
+ 408 026a 00000000 		.4byte	measuredTempratureCelsius
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 10
+
+
+ 409 026e 00       		.byte	0
+ 410              		.section	.debug_abbrev,"",%progbits
+ 411              	.Ldebug_abbrev0:
+ 412 0000 01       		.uleb128 0x1
+ 413 0001 11       		.uleb128 0x11
+ 414 0002 01       		.byte	0x1
+ 415 0003 25       		.uleb128 0x25
+ 416 0004 0E       		.uleb128 0xe
+ 417 0005 13       		.uleb128 0x13
+ 418 0006 0B       		.uleb128 0xb
+ 419 0007 03       		.uleb128 0x3
+ 420 0008 0E       		.uleb128 0xe
+ 421 0009 1B       		.uleb128 0x1b
+ 422 000a 0E       		.uleb128 0xe
+ 423 000b 55       		.uleb128 0x55
+ 424 000c 17       		.uleb128 0x17
+ 425 000d 11       		.uleb128 0x11
+ 426 000e 01       		.uleb128 0x1
+ 427 000f 10       		.uleb128 0x10
+ 428 0010 17       		.uleb128 0x17
+ 429 0011 00       		.byte	0
+ 430 0012 00       		.byte	0
+ 431 0013 02       		.uleb128 0x2
+ 432 0014 24       		.uleb128 0x24
+ 433 0015 00       		.byte	0
+ 434 0016 0B       		.uleb128 0xb
+ 435 0017 0B       		.uleb128 0xb
+ 436 0018 3E       		.uleb128 0x3e
+ 437 0019 0B       		.uleb128 0xb
+ 438 001a 03       		.uleb128 0x3
+ 439 001b 0E       		.uleb128 0xe
+ 440 001c 00       		.byte	0
+ 441 001d 00       		.byte	0
+ 442 001e 03       		.uleb128 0x3
+ 443 001f 24       		.uleb128 0x24
+ 444 0020 00       		.byte	0
+ 445 0021 0B       		.uleb128 0xb
+ 446 0022 0B       		.uleb128 0xb
+ 447 0023 3E       		.uleb128 0x3e
+ 448 0024 0B       		.uleb128 0xb
+ 449 0025 03       		.uleb128 0x3
+ 450 0026 08       		.uleb128 0x8
+ 451 0027 00       		.byte	0
+ 452 0028 00       		.byte	0
+ 453 0029 04       		.uleb128 0x4
+ 454 002a 16       		.uleb128 0x16
+ 455 002b 00       		.byte	0
+ 456 002c 03       		.uleb128 0x3
+ 457 002d 0E       		.uleb128 0xe
+ 458 002e 3A       		.uleb128 0x3a
+ 459 002f 0B       		.uleb128 0xb
+ 460 0030 3B       		.uleb128 0x3b
+ 461 0031 05       		.uleb128 0x5
+ 462 0032 49       		.uleb128 0x49
+ 463 0033 13       		.uleb128 0x13
+ 464 0034 00       		.byte	0
+ 465 0035 00       		.byte	0
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 11
+
+
+ 466 0036 05       		.uleb128 0x5
+ 467 0037 04       		.uleb128 0x4
+ 468 0038 01       		.byte	0x1
+ 469 0039 0B       		.uleb128 0xb
+ 470 003a 0B       		.uleb128 0xb
+ 471 003b 3A       		.uleb128 0x3a
+ 472 003c 0B       		.uleb128 0xb
+ 473 003d 3B       		.uleb128 0x3b
+ 474 003e 0B       		.uleb128 0xb
+ 475 003f 01       		.uleb128 0x1
+ 476 0040 13       		.uleb128 0x13
+ 477 0041 00       		.byte	0
+ 478 0042 00       		.byte	0
+ 479 0043 06       		.uleb128 0x6
+ 480 0044 28       		.uleb128 0x28
+ 481 0045 00       		.byte	0
+ 482 0046 03       		.uleb128 0x3
+ 483 0047 0E       		.uleb128 0xe
+ 484 0048 1C       		.uleb128 0x1c
+ 485 0049 0D       		.uleb128 0xd
+ 486 004a 00       		.byte	0
+ 487 004b 00       		.byte	0
+ 488 004c 07       		.uleb128 0x7
+ 489 004d 2E       		.uleb128 0x2e
+ 490 004e 01       		.byte	0x1
+ 491 004f 3F       		.uleb128 0x3f
+ 492 0050 19       		.uleb128 0x19
+ 493 0051 03       		.uleb128 0x3
+ 494 0052 0E       		.uleb128 0xe
+ 495 0053 3A       		.uleb128 0x3a
+ 496 0054 0B       		.uleb128 0xb
+ 497 0055 3B       		.uleb128 0x3b
+ 498 0056 0B       		.uleb128 0xb
+ 499 0057 27       		.uleb128 0x27
+ 500 0058 19       		.uleb128 0x19
+ 501 0059 11       		.uleb128 0x11
+ 502 005a 01       		.uleb128 0x1
+ 503 005b 12       		.uleb128 0x12
+ 504 005c 06       		.uleb128 0x6
+ 505 005d 40       		.uleb128 0x40
+ 506 005e 18       		.uleb128 0x18
+ 507 005f 9642     		.uleb128 0x2116
+ 508 0061 19       		.uleb128 0x19
+ 509 0062 01       		.uleb128 0x1
+ 510 0063 13       		.uleb128 0x13
+ 511 0064 00       		.byte	0
+ 512 0065 00       		.byte	0
+ 513 0066 08       		.uleb128 0x8
+ 514 0067 34       		.uleb128 0x34
+ 515 0068 00       		.byte	0
+ 516 0069 03       		.uleb128 0x3
+ 517 006a 0E       		.uleb128 0xe
+ 518 006b 3A       		.uleb128 0x3a
+ 519 006c 0B       		.uleb128 0xb
+ 520 006d 3B       		.uleb128 0x3b
+ 521 006e 0B       		.uleb128 0xb
+ 522 006f 49       		.uleb128 0x49
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 12
+
+
+ 523 0070 13       		.uleb128 0x13
+ 524 0071 02       		.uleb128 0x2
+ 525 0072 18       		.uleb128 0x18
+ 526 0073 00       		.byte	0
+ 527 0074 00       		.byte	0
+ 528 0075 09       		.uleb128 0x9
+ 529 0076 2E       		.uleb128 0x2e
+ 530 0077 00       		.byte	0
+ 531 0078 3F       		.uleb128 0x3f
+ 532 0079 19       		.uleb128 0x19
+ 533 007a 03       		.uleb128 0x3
+ 534 007b 0E       		.uleb128 0xe
+ 535 007c 3A       		.uleb128 0x3a
+ 536 007d 0B       		.uleb128 0xb
+ 537 007e 3B       		.uleb128 0x3b
+ 538 007f 0B       		.uleb128 0xb
+ 539 0080 27       		.uleb128 0x27
+ 540 0081 19       		.uleb128 0x19
+ 541 0082 49       		.uleb128 0x49
+ 542 0083 13       		.uleb128 0x13
+ 543 0084 11       		.uleb128 0x11
+ 544 0085 01       		.uleb128 0x1
+ 545 0086 12       		.uleb128 0x12
+ 546 0087 06       		.uleb128 0x6
+ 547 0088 40       		.uleb128 0x40
+ 548 0089 18       		.uleb128 0x18
+ 549 008a 9742     		.uleb128 0x2117
+ 550 008c 19       		.uleb128 0x19
+ 551 008d 00       		.byte	0
+ 552 008e 00       		.byte	0
+ 553 008f 00       		.byte	0
+ 554              		.section	.debug_aranges,"",%progbits
+ 555 0000 24000000 		.4byte	0x24
+ 556 0004 0200     		.2byte	0x2
+ 557 0006 00000000 		.4byte	.Ldebug_info0
+ 558 000a 04       		.byte	0x4
+ 559 000b 00       		.byte	0
+ 560 000c 0000     		.2byte	0
+ 561 000e 0000     		.2byte	0
+ 562 0010 00000000 		.4byte	.LFB37
+ 563 0014 44000000 		.4byte	.LFE37-.LFB37
+ 564 0018 00000000 		.4byte	.LFB38
+ 565 001c 14000000 		.4byte	.LFE38-.LFB38
+ 566 0020 00000000 		.4byte	0
+ 567 0024 00000000 		.4byte	0
+ 568              		.section	.debug_ranges,"",%progbits
+ 569              	.Ldebug_ranges0:
+ 570 0000 00000000 		.4byte	.LFB37
+ 571 0004 44000000 		.4byte	.LFE37
+ 572 0008 00000000 		.4byte	.LFB38
+ 573 000c 14000000 		.4byte	.LFE38
+ 574 0010 00000000 		.4byte	0
+ 575 0014 00000000 		.4byte	0
+ 576              		.section	.debug_line,"",%progbits
+ 577              	.Ldebug_line0:
+ 578 0000 8B000000 		.section	.debug_str,"MS",%progbits,1
+ 578      02005900 
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 13
+
+
+ 578      00000201 
+ 578      FB0E0D00 
+ 578      01010101 
+ 579              	.LASF23:
+ 580 0000 4359424C 		.ascii	"CYBLE_EVT_GAP_PASSKEY_ENTRY_REQUEST\000"
+ 580      455F4556 
+ 580      545F4741 
+ 580      505F5041 
+ 580      53534B45 
+ 581              	.LASF77:
+ 582 0024 4D656173 		.ascii	"MeasureTemperature\000"
+ 582      75726554 
+ 582      656D7065 
+ 582      72617475 
+ 582      726500
+ 583              	.LASF72:
+ 584 0037 41444343 		.ascii	"ADCCountsCorrected\000"
+ 584      6F756E74 
+ 584      73436F72 
+ 584      72656374 
+ 584      656400
+ 585              	.LASF2:
+ 586 004a 73686F72 		.ascii	"short int\000"
+ 586      7420696E 
+ 586      7400
+ 587              	.LASF26:
+ 588 0054 4359424C 		.ascii	"CYBLE_EVT_GAP_AUTH_FAILED\000"
+ 588      455F4556 
+ 588      545F4741 
+ 588      505F4155 
+ 588      54485F46 
+ 589              	.LASF14:
+ 590 006e 73697A65 		.ascii	"sizetype\000"
+ 590      74797065 
+ 590      00
+ 591              	.LASF75:
+ 592 0077 2E5C5465 		.ascii	".\\Temperature.c\000"
+ 592      6D706572 
+ 592      61747572 
+ 592      652E6300 
+ 593              	.LASF34:
+ 594 0087 4359424C 		.ascii	"CYBLE_EVT_GATTC_ERROR_RSP\000"
+ 594      455F4556 
+ 594      545F4741 
+ 594      5454435F 
+ 594      4552524F 
+ 595              	.LASF19:
+ 596 00a1 4359424C 		.ascii	"CYBLE_EVT_HCI_STATUS\000"
+ 596      455F4556 
+ 596      545F4843 
+ 596      495F5354 
+ 596      41545553 
+ 597              	.LASF40:
+ 598 00b6 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_BY_TYPE_RSP\000"
+ 598      455F4556 
+ 598      545F4741 
+ 598      5454435F 
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 14
+
+
+ 598      52454144 
+ 599              	.LASF16:
+ 600 00d7 4359424C 		.ascii	"CYBLE_EVT_STACK_ON\000"
+ 600      455F4556 
+ 600      545F5354 
+ 600      41434B5F 
+ 600      4F4E00
+ 601              	.LASF37:
+ 602 00ea 4359424C 		.ascii	"CYBLE_EVT_GATTS_XCNHG_MTU_REQ\000"
+ 602      455F4556 
+ 602      545F4741 
+ 602      5454535F 
+ 602      58434E48 
+ 603              	.LASF9:
+ 604 0108 75696E74 		.ascii	"uint16\000"
+ 604      313600
+ 605              	.LASF33:
+ 606 010f 4359424C 		.ascii	"CYBLE_EVT_GAP_KEYINFO_EXCHNGE_CMPLT\000"
+ 606      455F4556 
+ 606      545F4741 
+ 606      505F4B45 
+ 606      59494E46 
+ 607              	.LASF45:
+ 608 0133 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_MULTI_RSP\000"
+ 608      455F4556 
+ 608      545F4741 
+ 608      5454435F 
+ 608      52454144 
+ 609              	.LASF54:
+ 610 0152 4359424C 		.ascii	"CYBLE_EVT_GATTS_HANDLE_VALUE_CNF\000"
+ 610      455F4556 
+ 610      545F4741 
+ 610      5454535F 
+ 610      48414E44 
+ 611              	.LASF15:
+ 612 0173 4359424C 		.ascii	"CYBLE_EVT_HOST_INVALID\000"
+ 612      455F4556 
+ 612      545F484F 
+ 612      53545F49 
+ 612      4E56414C 
+ 613              	.LASF61:
+ 614 018a 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_CONN_IND\000"
+ 614      455F4556 
+ 614      545F4C32 
+ 614      4341505F 
+ 614      43424643 
+ 615              	.LASF64:
+ 616 01a8 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_DISCONN_CNF\000"
+ 616      455F4556 
+ 616      545F4C32 
+ 616      4341505F 
+ 616      43424643 
+ 617              	.LASF11:
+ 618 01c9 666C6F61 		.ascii	"float\000"
+ 618      7400
+ 619              	.LASF43:
+ 620 01cf 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_RSP\000"
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 15
+
+
+ 620      455F4556 
+ 620      545F4741 
+ 620      5454435F 
+ 620      52454144 
+ 621              	.LASF47:
+ 622 01e8 4359424C 		.ascii	"CYBLE_EVT_GATTC_WRITE_RSP\000"
+ 622      455F4556 
+ 622      545F4741 
+ 622      5454435F 
+ 622      57524954 
+ 623              	.LASF6:
+ 624 0202 6C6F6E67 		.ascii	"long long int\000"
+ 624      206C6F6E 
+ 624      6720696E 
+ 624      7400
+ 625              	.LASF7:
+ 626 0210 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 626      206C6F6E 
+ 626      6720756E 
+ 626      7369676E 
+ 626      65642069 
+ 627              	.LASF78:
+ 628 0227 4765744D 		.ascii	"GetMeasuredTemprature\000"
+ 628      65617375 
+ 628      72656454 
+ 628      656D7072 
+ 628      61747572 
+ 629              	.LASF4:
+ 630 023d 6C6F6E67 		.ascii	"long int\000"
+ 630      20696E74 
+ 630      00
+ 631              	.LASF53:
+ 632 0246 4359424C 		.ascii	"CYBLE_EVT_GATTC_HANDLE_VALUE_IND\000"
+ 632      455F4556 
+ 632      545F4741 
+ 632      5454435F 
+ 632      48414E44 
+ 633              	.LASF28:
+ 634 0267 4359424C 		.ascii	"CYBLE_EVT_GAP_DEVICE_CONNECTED\000"
+ 634      455F4556 
+ 634      545F4741 
+ 634      505F4445 
+ 634      56494345 
+ 635              	.LASF27:
+ 636 0286 4359424C 		.ascii	"CYBLE_EVT_GAPP_ADVERTISEMENT_START_STOP\000"
+ 636      455F4556 
+ 636      545F4741 
+ 636      50505F41 
+ 636      44564552 
+ 637              	.LASF52:
+ 638 02ae 4359424C 		.ascii	"CYBLE_EVT_GATTC_HANDLE_VALUE_NTF\000"
+ 638      455F4556 
+ 638      545F4741 
+ 638      5454435F 
+ 638      48414E44 
+ 639              	.LASF20:
+ 640 02cf 4359424C 		.ascii	"CYBLE_EVT_STACK_BUSY_STATUS\000"
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 16
+
+
+ 640      455F4556 
+ 640      545F5354 
+ 640      41434B5F 
+ 640      42555359 
+ 641              	.LASF24:
+ 642 02eb 4359424C 		.ascii	"CYBLE_EVT_GAP_PASSKEY_DISPLAY_REQUEST\000"
+ 642      455F4556 
+ 642      545F4741 
+ 642      505F5041 
+ 642      53534B45 
+ 643              	.LASF62:
+ 644 0311 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_CONN_CNF\000"
+ 644      455F4556 
+ 644      545F4C32 
+ 644      4341505F 
+ 644      43424643 
+ 645              	.LASF71:
+ 646 032f 4359424C 		.ascii	"CYBLE_EVT_MAX\000"
+ 646      455F4556 
+ 646      545F4D41 
+ 646      5800
+ 647              	.LASF58:
+ 648 033d 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CONN_PARAM_UPDATE_REQ\000"
+ 648      455F4556 
+ 648      545F4C32 
+ 648      4341505F 
+ 648      434F4E4E 
+ 649              	.LASF1:
+ 650 0363 756E7369 		.ascii	"unsigned char\000"
+ 650      676E6564 
+ 650      20636861 
+ 650      7200
+ 651              	.LASF49:
+ 652 0371 4359424C 		.ascii	"CYBLE_EVT_GATTS_PREP_WRITE_REQ\000"
+ 652      455F4556 
+ 652      545F4741 
+ 652      5454535F 
+ 652      50524550 
+ 653              	.LASF70:
+ 654 0390 4359424C 		.ascii	"CYBLE_EVT_LE_PING_AUTH_TIMEOUT\000"
+ 654      455F4556 
+ 654      545F4C45 
+ 654      5F50494E 
+ 654      475F4155 
+ 655              	.LASF41:
+ 656 03af 4359424C 		.ascii	"CYBLE_EVT_GATTC_FIND_INFO_RSP\000"
+ 656      455F4556 
+ 656      545F4741 
+ 656      5454435F 
+ 656      46494E44 
+ 657              	.LASF0:
+ 658 03cd 7369676E 		.ascii	"signed char\000"
+ 658      65642063 
+ 658      68617200 
+ 659              	.LASF46:
+ 660 03d9 4359424C 		.ascii	"CYBLE_EVT_GATTS_WRITE_REQ\000"
+ 660      455F4556 
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 17
+
+
+ 660      545F4741 
+ 660      5454535F 
+ 660      57524954 
+ 661              	.LASF42:
+ 662 03f3 4359424C 		.ascii	"CYBLE_EVT_GATTC_FIND_BY_TYPE_VALUE_RSP\000"
+ 662      455F4556 
+ 662      545F4741 
+ 662      5454435F 
+ 662      46494E44 
+ 663              	.LASF25:
+ 664 041a 4359424C 		.ascii	"CYBLE_EVT_GAP_AUTH_COMPLETE\000"
+ 664      455F4556 
+ 664      545F4741 
+ 664      505F4155 
+ 664      54485F43 
+ 665              	.LASF8:
+ 666 0436 756E7369 		.ascii	"unsigned int\000"
+ 666      676E6564 
+ 666      20696E74 
+ 666      00
+ 667              	.LASF35:
+ 668 0443 4359424C 		.ascii	"CYBLE_EVT_GATT_CONNECT_IND\000"
+ 668      455F4556 
+ 668      545F4741 
+ 668      54545F43 
+ 668      4F4E4E45 
+ 669              	.LASF5:
+ 670 045e 6C6F6E67 		.ascii	"long unsigned int\000"
+ 670      20756E73 
+ 670      69676E65 
+ 670      6420696E 
+ 670      7400
+ 671              	.LASF22:
+ 672 0470 4359424C 		.ascii	"CYBLE_EVT_GAP_AUTH_REQ\000"
+ 672      455F4556 
+ 672      545F4741 
+ 672      505F4155 
+ 672      54485F52 
+ 673              	.LASF63:
+ 674 0487 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_DISCONN_IND\000"
+ 674      455F4556 
+ 674      545F4C32 
+ 674      4341505F 
+ 674      43424643 
+ 675              	.LASF30:
+ 676 04a8 4359424C 		.ascii	"CYBLE_EVT_GAP_ENCRYPT_CHANGE\000"
+ 676      455F4556 
+ 676      545F4741 
+ 676      505F454E 
+ 676      43525950 
+ 677              	.LASF3:
+ 678 04c5 73686F72 		.ascii	"short unsigned int\000"
+ 678      7420756E 
+ 678      7369676E 
+ 678      65642069 
+ 678      6E7400
+ 679              	.LASF31:
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 18
+
+
+ 680 04d8 4359424C 		.ascii	"CYBLE_EVT_GAP_CONNECTION_UPDATE_COMPLETE\000"
+ 680      455F4556 
+ 680      545F4741 
+ 680      505F434F 
+ 680      4E4E4543 
+ 681              	.LASF13:
+ 682 0501 63686172 		.ascii	"char\000"
+ 682      00
+ 683              	.LASF74:
+ 684 0506 474E5520 		.ascii	"GNU C 4.9.3 20150303 (release) [ARM/embedded-4_9-br"
+ 684      4320342E 
+ 684      392E3320 
+ 684      32303135 
+ 684      30333033 
+ 685 0539 616E6368 		.ascii	"anch revision 221220] -mcpu=cortex-m0 -mthumb -g -O"
+ 685      20726576 
+ 685      6973696F 
+ 685      6E203232 
+ 685      31323230 
+ 686 056c 30202D66 		.ascii	"0 -ffunction-sections -ffat-lto-objects\000"
+ 686      66756E63 
+ 686      74696F6E 
+ 686      2D736563 
+ 686      74696F6E 
+ 687              	.LASF60:
+ 688 0594 4359424C 		.ascii	"CYBLE_EVT_L2CAP_COMMAND_REJ\000"
+ 688      455F4556 
+ 688      545F4C32 
+ 688      4341505F 
+ 688      434F4D4D 
+ 689              	.LASF44:
+ 690 05b0 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_BLOB_RSP\000"
+ 690      455F4556 
+ 690      545F4741 
+ 690      5454435F 
+ 690      52454144 
+ 691              	.LASF76:
+ 692 05ce 433A5C55 		.ascii	"C:\\Users\\Johnny K\\Desktop\\PSoC_4_BLE_Eddystone_"
+ 692      73657273 
+ 692      5C4A6F68 
+ 692      6E6E7920 
+ 692      4B5C4465 
+ 693 05fd 436F7079 		.ascii	"Copy_01.cydsn (2)\\PSoC_4_BLE_Eddystone_Copy_01_Cop"
+ 693      5F30312E 
+ 693      63796473 
+ 693      6E202832 
+ 693      295C5053 
+ 694 062f 795F3033 		.ascii	"y_03.cydsn\000"
+ 694      2E637964 
+ 694      736E00
+ 695              	.LASF51:
+ 696 063a 4359424C 		.ascii	"CYBLE_EVT_GATTC_EXEC_WRITE_RSP\000"
+ 696      455F4556 
+ 696      545F4741 
+ 696      5454435F 
+ 696      45584543 
+ 697              	.LASF32:
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 19
+
+
+ 698 0659 4359424C 		.ascii	"CYBLE_EVT_GAPC_SCAN_START_STOP\000"
+ 698      455F4556 
+ 698      545F4741 
+ 698      50435F53 
+ 698      43414E5F 
+ 699              	.LASF69:
+ 700 0678 4359424C 		.ascii	"CYBLE_EVT_PENDING_FLASH_WRITE\000"
+ 700      455F4556 
+ 700      545F5045 
+ 700      4E44494E 
+ 700      475F464C 
+ 701              	.LASF66:
+ 702 0696 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_RX_CREDIT_IND\000"
+ 702      455F4556 
+ 702      545F4C32 
+ 702      4341505F 
+ 702      43424643 
+ 703              	.LASF10:
+ 704 06b9 696E7433 		.ascii	"int32\000"
+ 704      3200
+ 705              	.LASF12:
+ 706 06bf 646F7562 		.ascii	"double\000"
+ 706      6C6500
+ 707              	.LASF67:
+ 708 06c6 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_TX_CREDIT_IND\000"
+ 708      455F4556 
+ 708      545F4C32 
+ 708      4341505F 
+ 708      43424643 
+ 709              	.LASF18:
+ 710 06e9 4359424C 		.ascii	"CYBLE_EVT_HARDWARE_ERROR\000"
+ 710      455F4556 
+ 710      545F4841 
+ 710      52445741 
+ 710      52455F45 
+ 711              	.LASF65:
+ 712 0702 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_DATA_READ\000"
+ 712      455F4556 
+ 712      545F4C32 
+ 712      4341505F 
+ 712      43424643 
+ 713              	.LASF59:
+ 714 0721 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CONN_PARAM_UPDATE_RSP\000"
+ 714      455F4556 
+ 714      545F4C32 
+ 714      4341505F 
+ 714      434F4E4E 
+ 715              	.LASF21:
+ 716 0747 4359424C 		.ascii	"CYBLE_EVT_GAPC_SCAN_PROGRESS_RESULT\000"
+ 716      455F4556 
+ 716      545F4741 
+ 716      50435F53 
+ 716      43414E5F 
+ 717              	.LASF73:
+ 718 076b 6D656173 		.ascii	"measuredTempratureCelsius\000"
+ 718      75726564 
+ 718      54656D70 
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 20
+
+
+ 718      72617475 
+ 718      72654365 
+ 719              	.LASF39:
+ 720 0785 4359424C 		.ascii	"CYBLE_EVT_GATTC_READ_BY_GROUP_TYPE_RSP\000"
+ 720      455F4556 
+ 720      545F4741 
+ 720      5454435F 
+ 720      52454144 
+ 721              	.LASF48:
+ 722 07ac 4359424C 		.ascii	"CYBLE_EVT_GATTS_WRITE_CMD_REQ\000"
+ 722      455F4556 
+ 722      545F4741 
+ 722      5454535F 
+ 722      57524954 
+ 723              	.LASF38:
+ 724 07ca 4359424C 		.ascii	"CYBLE_EVT_GATTC_XCHNG_MTU_RSP\000"
+ 724      455F4556 
+ 724      545F4741 
+ 724      5454435F 
+ 724      5843484E 
+ 725              	.LASF68:
+ 726 07e8 4359424C 		.ascii	"CYBLE_EVT_L2CAP_CBFC_DATA_WRITE_IND\000"
+ 726      455F4556 
+ 726      545F4C32 
+ 726      4341505F 
+ 726      43424643 
+ 727              	.LASF17:
+ 728 080c 4359424C 		.ascii	"CYBLE_EVT_TIMEOUT\000"
+ 728      455F4556 
+ 728      545F5449 
+ 728      4D454F55 
+ 728      5400
+ 729              	.LASF57:
+ 730 081e 4359424C 		.ascii	"CYBLE_EVT_GATTS_READ_CHAR_VAL_ACCESS_REQ\000"
+ 730      455F4556 
+ 730      545F4741 
+ 730      5454535F 
+ 730      52454144 
+ 731              	.LASF56:
+ 732 0847 4359424C 		.ascii	"CYBLE_EVT_GATTC_STOP_CMD_COMPLETE\000"
+ 732      455F4556 
+ 732      545F4741 
+ 732      5454435F 
+ 732      53544F50 
+ 733              	.LASF50:
+ 734 0869 4359424C 		.ascii	"CYBLE_EVT_GATTS_EXEC_WRITE_REQ\000"
+ 734      455F4556 
+ 734      545F4741 
+ 734      5454535F 
+ 734      45584543 
+ 735              	.LASF29:
+ 736 0888 4359424C 		.ascii	"CYBLE_EVT_GAP_DEVICE_DISCONNECTED\000"
+ 736      455F4556 
+ 736      545F4741 
+ 736      505F4445 
+ 736      56494345 
+ 737              	.LASF55:
+ARM GAS  C:\Users\JOHNNY~1\AppData\Local\Temp\cckCyZSb.s 			page 21
+
+
+ 738 08aa 4359424C 		.ascii	"CYBLE_EVT_GATTS_DATA_SIGNED_CMD_REQ\000"
+ 738      455F4556 
+ 738      545F4741 
+ 738      5454535F 
+ 738      44415441 
+ 739              	.LASF36:
+ 740 08ce 4359424C 		.ascii	"CYBLE_EVT_GATT_DISCONNECT_IND\000"
+ 740      455F4556 
+ 740      545F4741 
+ 740      54545F44 
+ 740      4953434F 
+ 741              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 4.9.3 20150303 (release) [ARM/embedded-4_9-br
